@@ -1,7 +1,7 @@
 <template>
     	<nav class="navbar navbar-expand-sm navbar-light">
             <div class="container-fluid ">
-                <a class="navbar-brand" href="#"> <img src="imgs/icons/logoVoir.png" alt="icon" class="navbarImage"></a>
+                <a class="navbar-brand" href="#"> <img src="../imgs/icons/logoVoir.png" alt="icon" class="navbarImage"></a>
                 <div id="navbar">
                     <ul class="nav navbar-nav">
                         <li class="nav-item px-2">
