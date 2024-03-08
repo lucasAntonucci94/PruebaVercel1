@@ -1,0 +1,24 @@
+Carrera: Diseño web y Programación
+Cuatrimestre: 4to
+Año: 2022
+Turno: Noche
+Comisión: dwn4av
+Docente: Santiago Gallino
+Caracter: 2 Parcial
+Alumnos:[
+{
+	Apellido: Antonucci
+	Nombre: Lucas
+},
+{
+	Apellido: Yamamoto
+	Nombre: Ana Paula
+},
+]
+
+
+DATOS DE ACCESO ADMINISTRADOR
+
+
+usuario: admin@admin.com
+contraseña: Ab1234
