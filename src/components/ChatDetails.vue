@@ -1,25 +1,11 @@
 <template>
-  <div class="container pt-5">
-    <div class="row d-flex px-5 justify-content-center align-items-center">
-      <div class="col-12">
-        <!-- <Alert v-if="message.text !== null">
-          {{ message.text }}
-        </Alert> -->
-      </div>
-      <div class="col-5">
-        <img
-          src="imgs/image-chat.png"
-          alt="image-default"
-          class=".img-fluid"
-          style="max-width: 100%; height: auto"
-        />
-      </div>
-      <div class="col-7">
-        <h1 class="mb-4 h4">Chat con {{ otherUser.email }}</h1>
+  <section class="col-8 bg-light d-flex justify-content-center align-items-center " style="height:  100%;">
+      <div class="col-12 py-2">
+        <!-- <h1 class="mb-4 h4 sr-only">Chat con : {props.selectedUserEmail}</h1> -->
         <div class="p-3 mb-3 border rounded" style="min-height: 400px">
           <div v-for="message in messages" class="mb-2">
-            <b
-              >(<DateFormatted :date="message.created_at" />)
+            <b>
+              (<DateFormatted :date="message.created_at" />)
               <router-link :to="`/user/${message.user}`">{{
                 message.user
               }}</router-link>
@@ -27,6 +13,7 @@
             >: {{ message.message }}
           </div>
         </div>
+
         <form action="#" @submit.prevent="sendMessage">
           <div class="d-flex justify-content-start">
             <label for="message" class="visually-hidden">Mensaje</label>
@@ -39,15 +26,8 @@
             <button type="submit" class="btn btn-primary">ENVIAR</button>
           </div>
         </form>
-        <router-link
-          class="btn btn-dark mt-4 w-100 border border-light"
-          :to="`/${(backurl != 'user') ? backurl : backurl+'/'+otherUser.email }`"
-        >
-          <b class="h5 text-decoration-none"> VOLVER AL PERFIL </b>
-        </router-link>
       </div>
-    </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
@@ -55,30 +35,52 @@ import { useAuth } from "../composition/functions.js";
 import { useRoute } from "vue-router";
 import DateFormatted from "../components/DateFormatted.vue";
 import { getUserProfileByEmail } from "../users/index.js";
-import { onMounted, onUnmounted, ref } from "vue";
+import { ref, onMounted, onUnmounted, watch } from 'vue';
 import {
   subscribeToIncomingPrivateMessages,
   savePrivateMessage,
 } from "../chat/chat.js";
 
+const emit = defineEmits(['clearMessages']);
 const route = useRoute();
 const { user } = useAuth();
-const otherUser = ref({
+const formMessage = ref("");
+const selectedUser = ref({
   id: "",
   email: "",
   displayName: "",
 });
 
-const formMessage = ref("");
-const backurl = ref(route.params.backurl);
+const props = defineProps({
+  selectedUserEmail: String,
+});
 
+watch(
+  () => props.selectedUserEmail,
+  async (newEmail) => {
+    // Clear messages when selectedUserEmail changes
+    messages.value = [];
+    // Load new messages for the new user
+    // ...
+    loadMessagesForSelectedUser(newEmail);
+  }
+);
 async function sendMessage() {
   const currentMessage = formMessage.value;
   formMessage.value = "";
   await savePrivateMessage(
     user.value.email,
-    otherUser.value.email,
+    props.selectedUserEmail,
     currentMessage
+  );
+}
+async function loadMessagesForSelectedUser(selectedUserEmail) {
+  const currentMessage = formMessage.value;
+  formMessage.value = "";
+  await subscribeToIncomingPrivateMessages(
+    user.value.email,
+    selectedUserEmail,
+    (data) => (messages.value = data)
   );
 }
 
@@ -86,12 +88,14 @@ const messages = ref([]);
 let unsubscribe = () => {};
 
 onMounted(async () => {
-  otherUser.value = await getUserProfileByEmail(route.params.email).catch(
+  console.log("props.selectedUserEmail")
+  console.log(props.selectedUserEmail)
+  selectedUser.value = await getUserProfileByEmail(props.selectedUserEmail).catch(
     (err) => console.error("[UserChat] getUserProfileByEmail - Error: ", err)
   );
   unsubscribe = await subscribeToIncomingPrivateMessages(
     user.value.email,
-    otherUser.value.email,
+    selectedUser.value.email,
     (data) => (messages.value = data)
   );
 });

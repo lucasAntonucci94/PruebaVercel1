@@ -134,14 +134,18 @@ const toDelete = async (id) => {
   const success = await deletePost(id);
   isLoading.value = false;
 };
+const updatePostImage = (newPhotoURLFile) => {
+  post.user.photoURLFile = newPhotoURLFile;
+};
 
 onMounted(async () => {
   // COMO SOLUCION A LA FALLA EN REFRESCAR LAS REFERENCIAS SE PUEDE CORRER ESTO
   // Carga le imagen del usuario del posteo cada vez que monta el componente
-   getFileUrl(props.post.user.photoURL).then(url=>{
-            props.post.user.photoURLFile = url
-        })
- 
+  //  getFileUrl(props.post.user.photoURL).then(url=>{
+  //           props.post.user.photoURLFile = url
+  //       })
+  // $on('update-post-image', updatePostImage);
+
 })
 </script>
 

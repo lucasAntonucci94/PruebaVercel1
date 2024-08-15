@@ -35,6 +35,12 @@
                                     <b class="px-2">Mensajes</b> 
                                 </router-link>
                             </li>
+                            <li class="nav-item px-2">
+                                <router-link class="nav-link text-white" to="/chatListIntegrated">
+                                    <i class="fa-solid fa-comments"></i>
+                                    <b class="px-2">MensajesInt</b> 
+                                </router-link>
+                            </li>
                             <li class="nav-item  px-2">
                                 <router-link class="nav-link text-white" to="/profile">
                                     <i class="fa-solid fa-user"></i>

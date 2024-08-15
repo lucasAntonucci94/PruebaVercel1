@@ -88,7 +88,6 @@ export async function createLocation({title, detail, address, phone, socialNetwo
  * @param {{title: string, body: string, image: string}} data
  */
  export const updateLocation = async (id, data) => {
-    debugger
    const docRef = doc(db, 'locations', id);
    await updateDoc(docRef, {
        title:data.title,

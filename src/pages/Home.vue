@@ -69,6 +69,26 @@
               :disabled="form.isLoading"
               @input="form.image = $event.target.files[0]"
             /> -->
+            <div class="col-6">
+              <label for="photoURL" class="form-label my-2">Imagen</label>
+              <input
+                type="file"
+                id="photoURL"
+                class="form-control"
+                :disabled="form.isLoading"
+                @change="loadImage"
+              />
+              <!-- <div class="p-5" v-if="photoURL !== null">
+                <p>Previsualización de la imagen</p>
+                <img 
+                  :src="photoURL"
+                  alt=""
+                  ref="previewImage"
+                  class=".img-fluid"    
+                  style="width: 100%;"
+                />
+              </div> -->
+            </div>
             <div v-if="categories" class=" mt-2 rounded" >
             
                <button class="btn mb-1 border border-light" style="background-color:#22223442" v-on:click.prevent="showCategories(1)"> <label class="text-white text-white">
@@ -255,7 +275,6 @@ export default {
       this.isLoading = false;
     });
     this.authUnsubscribe = listenForAuthChanges((userData) => {
-      debugger
       this.form.user = userData;
     });
   },

@@ -171,7 +171,6 @@ function getCachedRef(from, to) {
  */
 export const savePrivateMessage = async (from, to, message) => {
 
-    debugger
     const currentChatRef = await getPrivateChatRef(from, to);
     await addDoc(currentChatRef, {
         message,
@@ -188,6 +187,7 @@ export const savePrivateMessage = async (from, to, message) => {
  * @returns {Promise<Unsubscribe>}
  */
 export const subscribeToIncomingPrivateMessages = async (from, to, callback) => {
+    debugger
     const ref = await getPrivateChatRef(from, to);
 
     const queryMessages = query(ref, orderBy('created_at'));

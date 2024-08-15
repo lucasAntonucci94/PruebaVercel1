@@ -34,6 +34,8 @@
           <div class="col-8 d-flex justify-content-center align-items-center pb-5">
             <div v-if="!formFlag" class="col-8">
               <h2 class="mb-5 text-center sr-only">Listado de Lugares de interes</h2>
+              <Map v-if="arrayLocations.length > 0" :locations="arrayLocations ?? []" />
+
             <template v-for="location in arrayLocations">
              <div class="row bg-light rounded border my-2">
                    
@@ -113,8 +115,8 @@
                   </div>
                   <div class="col-12 my-3">
                     <ButtonSubmitLoader :loading="isLoading">
-                      <strong> ACEPTAR </strong></ButtonSubmitLoader
-                    >
+                      <strong> ACEPTAR </strong>
+                    </ButtonSubmitLoader>
                   </div>
                 </div>
               </form>
@@ -142,10 +144,7 @@
             <button class="btn btn-info mt-4" v-on:click="toShow(null)">
                 Volver
             </button>
-            </div>
-
-         
-          
+            </div>          
         </div>
     </template>
   </div>
@@ -164,6 +163,7 @@ import { useAuth } from "../composition/functions.js";
 import { onMounted, onUnmounted } from "vue";
 import Loader from "../components/Loader.vue";
 import Alert from "../components/Alert.vue";
+import Map from "../components/Map.vue";
 
 const { user } = useAuth();
 const arrayLocations = ref([]);
@@ -213,7 +213,6 @@ const toShow = (location) => {
   showFlag.value = !showFlag.value
   if(location != null){
     locationRef.value = location
-    debugger
   }
 };
 //Cambia formFlag que oculta el listado y muestra el formulario
@@ -225,7 +224,6 @@ const toCreate = () => {
 // guardamos el nuevo lugar de interes
 const saveLocation = () => {
   isLoading.value = true;
-  debugger;
   if (
     formData.value.title == null ||
     formData.value.title == "" ||
@@ -242,7 +240,6 @@ const saveLocation = () => {
     };
     isLoading.value = false;
   } else {
-    debugger;
     if (locationRef.value.idDoc == null || locationRef.value.idDoc == "") {
       const success = createLocation({
         ...formData.value,
@@ -273,7 +270,6 @@ const saveLocation = () => {
       const success = updateLocation(locationRef.value.idDoc, {
         ...formData.value,
       });
-      debugger;
       if (success) {
         isLoading.value = false;
         formFlag.value = !formFlag.value;
@@ -317,6 +313,5 @@ onMounted(async () => {
   });
 });
 </script>
-
 <style>
 </style>

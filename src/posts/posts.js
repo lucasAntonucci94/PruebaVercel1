@@ -1,5 +1,6 @@
 import { getFirestore, addDoc, deleteDoc, doc, getDocs, updateDoc, collection, onSnapshot, orderBy, query, serverTimestamp, where, limit } from "firebase/firestore";
 import {newGuid} from '../helpers/newGuid.js'
+
 const db = getFirestore();
 const postRef = collection(db, 'posts');
 
@@ -131,7 +132,6 @@ export async function find(filters) {
  * @param {{title: string, body: string, image: string}} data
  */
  export const deletePost = async (id) => {
-    debugger
     const docRef = doc(db, 'posts', id);
     await deleteDoc(docRef);
  }
@@ -193,4 +193,23 @@ export async function find(filters) {
         });
         callback(posts);
     });
+}
+
+
+/**
+ * Actualiza la imagen de usuario de cada post.
+ *
+ * @param {{photoURLFile: string}} options
+ * @returns {Promise<Array>}
+ */
+export function reloadPostImage(posts, photoURLFile) {
+    try {
+        posts.forEach(post => {
+          post.photoURLFile = photoURLFile;
+        });
+        debugger
+        return posts;
+    } catch(err) {
+        return [];
+    }
 }

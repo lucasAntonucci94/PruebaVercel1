@@ -41,9 +41,8 @@ export const getUserProfileByEmail = async (email) => {
     const snapshot = await getDocs(queryUser);
 
     if(snapshot.empty) return null;
-
     const user = snapshot.docs[0].data();
-
+    
     return {
         id: snapshot.docs[0].id,
         email: user.email,

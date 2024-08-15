@@ -272,7 +272,6 @@ const toCreate = () => {
 // guardamos el nuevo lugar de interes
 const saveLocation = () => {
   isLoading.value = true;
-  debugger;
   if (
     formData.value.title == null ||
     formData.value.title == "" ||
@@ -289,7 +288,6 @@ const saveLocation = () => {
     };
     isLoading.value = false;
   } else {
-    debugger;
     if (locationRef.value.idDoc == null || locationRef.value.idDoc == "") {
       const success = createLocation({
         ...formData.value,
@@ -320,7 +318,6 @@ const saveLocation = () => {
       const success = updateLocation(locationRef.value.idDoc, {
         ...formData.value,
       });
-      debugger;
       if (success) {
         isLoading.value = false;
         formFlag.value = !formFlag.value;
@@ -354,7 +351,6 @@ const toEdit = async (location) => {
 
 //elimina un lugar de interes
 const toDelete = async (id) => {
-  debugger
   const success = await deleteLocation(id);
   isLoading.value = false;
 };
