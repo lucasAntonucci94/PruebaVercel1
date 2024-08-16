@@ -2,7 +2,7 @@
   <section class="col-8 bg-light d-flex justify-content-center align-items-center " style="height:  100%;">
       <div class="col-12 py-2">
         <!-- <h1 class="mb-4 h4 sr-only">Chat con : {props.selectedUserEmail}</h1> -->
-        <div class="p-3 mb-3 border rounded" style="min-height: 400px">
+        <div ref="chatMessages" class="p-3 mb-3 border rounded  chat-messages">
           <div v-for="message in messages" class="mb-2">
             <b>
               (<DateFormatted :date="message.created_at" />)
@@ -58,10 +58,7 @@ const props = defineProps({
 watch(
   () => props.selectedUserEmail,
   async (newEmail) => {
-    // Clear messages when selectedUserEmail changes
     messages.value = [];
-    // Load new messages for the new user
-    // ...
     loadMessagesForSelectedUser(newEmail);
   }
 );
@@ -84,23 +81,39 @@ async function loadMessagesForSelectedUser(selectedUserEmail) {
   );
 }
 
+//no funciona re veer, deberia tirar la barra de scroll para abajo de todo en caso que tenga muchos chats y no entren a la vista. Para mostrar siempre los ultimos mensajes enviados.
+// function scrollToBottom() {
+//   const chatMessagesElement = this.$refs.chatMessages;
+//   chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
+// }
+
 const messages = ref([]);
 let unsubscribe = () => {};
 
 onMounted(async () => {
   console.log("props.selectedUserEmail")
   console.log(props.selectedUserEmail)
-  selectedUser.value = await getUserProfileByEmail(props.selectedUserEmail).catch(
-    (err) => console.error("[UserChat] getUserProfileByEmail - Error: ", err)
-  );
-  unsubscribe = await subscribeToIncomingPrivateMessages(
-    user.value.email,
-    selectedUser.value.email,
-    (data) => (messages.value = data)
-  );
+  if(props.selectedUserEmail != null && props.selectedUserEmail != ""){
+    selectedUser.value = await getUserProfileByEmail(props.selectedUserEmail).catch(
+      (err) => console.error("[UserChat] getUserProfileByEmail - Error: ", err)
+    );
+    unsubscribe = await subscribeToIncomingPrivateMessages(
+      user.value.email,
+      selectedUser.value.email,
+      (data) => (messages.value = data)
+    );
+  }
 });
 
 onUnmounted(() => {
   unsubscribe();
+  // scrollToBottom();
 });
 </script>
+
+<style>
+.chat-messages {
+  height: 60vh;
+  overflow-y: auto;
+}
+</style>

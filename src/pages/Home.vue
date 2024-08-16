@@ -181,7 +181,6 @@
     </div>
     </template> 
   </section>
-  
 </template>
 
 <script>
@@ -218,13 +217,14 @@ export default {
       user: "",
       title: "",
       body: "",
-      image: "",
+      imageBase64: null,
       categories: [],
       isLoading: false,
     },
     isLoading: true,
     postUnsubscribe: () => {},
     authUnsubscribe: () => {},
+    imageBase64 : null,
   }),
   computed: {},
   methods: {
@@ -265,6 +265,20 @@ export default {
     closeAlert () {
         this.message.text = null;
     },
+    // funciones de carga de imagen
+    loadImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onloadend = () => {
+          this.imageBase64 = reader.result;
+          this.form.imageBase64 = reader.result
+          // Aquí puedes procesar o almacenar la imagen base64
+          console.log(this.imageBase64);
+        };
+      }
+    }
   },
   mounted() {
     getCategories().then((data) => {

@@ -1,5 +1,6 @@
 import { getFirestore, addDoc, deleteDoc, doc, getDocs, updateDoc, collection, onSnapshot, orderBy, query, serverTimestamp, where, limit } from "firebase/firestore";
 import {newGuid} from '../helpers/newGuid.js'
+import {getFileMetadata, getFileUrl, uploadFile} from "../storage/index.js";
 
 const db = getFirestore();
 const postRef = collection(db, 'posts');
@@ -10,18 +11,40 @@ const postRef = collection(db, 'posts');
  * @param {{id: string, user: Object, title: string, body: string}} data
  * @returns {Promise<void>}
  */
-export async function savePost({user, title, body, categories}) {
-    user.isAdmin = false;
-    const data = {
-        id: newGuid(),
-        user,
-        title,
-        body,
-        categories,
-        timestamp: serverTimestamp(),
-    };
-
+export async function savePost({user, title, body, categories, imageBase64}) {
     try {
+        debugger
+        user.isAdmin = false;
+        const data = {
+            id: newGuid(),
+            user,
+            title,
+            body,
+            categories,
+            timestamp: serverTimestamp(),
+            imagePathFile: null,
+            imageUrlFile: null,
+        };
+
+        if(imageBase64 != null) {
+            const filePath = 'post/' + user.email + '/' + data.id + '.jpg';
+            var response = await uploadFile(filePath, imageBase64, {
+                // customMetadata: {
+                //     ...{
+                //         width: user.value?.avatar?.width,
+                //         height: user.value?.avatar?.height,
+                //       }
+                // }
+            });
+            debugger
+            data.imagePathFile = filePath;
+            
+            // obtengo uri de la imagen cargada
+            await getFileUrl(filePath).then(url=>{
+                data.imageUrlFile = url
+            })
+            debugger
+        }
         return await addDoc(postRef, data);
     } catch(err) {
         console.error('Error al grabar el Post. ', err);
@@ -45,10 +68,11 @@ export async function savePost({user, title, body, categories}) {
                     id : post.id,
                     title: post.title,
                     body: post.body,
-                    image: post.image,
                     user: post.user,
                     categories: post.categories,
-                    timestamp: post.timestamp
+                    timestamp: post.timestamp,
+                    imagePathFile: post.imagePathFile,
+                    imageUrlFile: post.imageUrlFile
                 }
             });
         callback(posts);
@@ -102,8 +126,9 @@ export async function find(filters) {
         id: post.id,
         title: post.title,
         body: post.body,
-        image: post.image,
-        timestamp: post.timestamp
+        timestamp: post.timestamp,
+        imagePathFile: post.imagePathFile,
+        imageUrlFile: post.imageUrlFile
     };
 }
 
@@ -120,7 +145,8 @@ export async function find(filters) {
    await updateDoc(docRef, {
        title: data.title,
        body: data.body,
-       // image: data.image
+    //    imagePathFile: post.imagePathFile,
+    //    imageUrlFile: post.imageUrlFile
      });
 }
 
@@ -152,11 +178,7 @@ export async function find(filters) {
     postQuerySnapshot.forEach((doc) => {
         postIds.push(doc.id);
     });
-    
-    var aux = {
-        id,
-        ...data
-    }
+
     // 2- Update User From POSTS
     postIds.forEach(idPost => {
         updateDoc(doc(db, 'posts', idPost), {

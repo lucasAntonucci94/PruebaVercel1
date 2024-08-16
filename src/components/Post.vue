@@ -76,9 +76,9 @@
           </div>
         </div>
       </div>
-      <div class="col-12 text-center">
+      <div v-if="post.imageUrlFile != null" class="col-12 text-center">
         <img
-          src="imgs/image-default.jpg"
+           :src="post.imageUrlFile"
           alt="image-default"
           class=".img-fluid"
           style="max-width: 100%; height: auto"
@@ -124,6 +124,8 @@ const props = defineProps({
     body: String,
     user: String,
     timestamp: Date,
+    imagePathFile: String,
+    imageUrlFile: String,
   },
 });
 
@@ -134,7 +136,7 @@ const toDelete = async (id) => {
   const success = await deletePost(id);
   isLoading.value = false;
 };
-const updatePostImage = (newPhotoURLFile) => {
+const updatePostUserImage = (newPhotoURLFile) => {
   post.user.photoURLFile = newPhotoURLFile;
 };
 
@@ -144,7 +146,9 @@ onMounted(async () => {
   //  getFileUrl(props.post.user.photoURL).then(url=>{
   //           props.post.user.photoURLFile = url
   //       })
-  // $on('update-post-image', updatePostImage);
+  // $on('update-post-user-image', updatePostUserImage);
+  console.log("props.post")
+  console.log(props.post)
 
 })
 </script>
