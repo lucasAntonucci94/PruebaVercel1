@@ -2,7 +2,7 @@
   <section class="container-fluid py-5">
     <div class="row d-flex justify-content-center">
       <div class="col-12 text-center">
-        <h1 class="mb-4">Conoce otros usuarios</h1>
+        <h1 class="mb-4">Conecta con otros usuarios</h1>
         <button v-if="!showGlobal" class="btn btn-outline-warning w-50 mb-5 d-none" v-on:click="setGlobal()">CHAT DE CONSULTAS</button>
         <button v-if="showGlobal" class="btn btn-warning w-50 mb-5" v-on:click="setGlobal()">VER SOCIAL</button>
       </div>
@@ -13,10 +13,9 @@
             v-for="user in this.users"
             :key="'key_' + user.email"
           >
-            <div class="col-3 d-flex-row align-items-center rounded border-secondary text-center border py-3" style="height: 275px; background-image: linear-gradient(rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.78)), url('/assets/imgs/image-avatar2.png'); background-repeat: no-repeat; background-size: cover;" >
+            <div class="col-3 d-flex-row align-items-center rounded border-secondary text-center border py-3" :style="{ height: '275px', backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.78)), url('${user.photoURLFile}')`, backgroundRepeat: 'no-repeat', backgroundSize: 'cover' }">
               <div class="wrapper " style="height: 100%;">
                 <div>
-
                   <router-link id="buttonProfile" class="text-white rounded bg-dark p-2" style="border-radius: 10px !important; margin-right: 4px;" :to="`/user/${user.email}`"><i class="fa-solid fa-add"></i></router-link>    
                   <router-link id="buttonProfile" class="text-white rounded bg-dark p-2" style="border-radius: 10px !important; margin-right: 4px;" :to="`/user/${user.email}`"><i class="fa-solid fa-eye"></i></router-link>    
                   <router-link id="buttonChat" class="text-white rounded bg-dark p-2" style="border-radius: 10px !important; margin-right: 4px;" :to="`/user/${user.email}/sociales/chat`"><i class="fa-solid fa-comment-dots"></i></router-link>    

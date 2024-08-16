@@ -1,5 +1,5 @@
 <template>
-    <div id="map" style="width: 100%; height: 400px;"></div>
+    <div id="map" style="width: 100%; height: 450px;"></div>
 </template>
   
 <script setup>
@@ -18,38 +18,38 @@
     });
     
 
-//   // Check for geolocation support
-//   if (navigator.geolocation) {
-//     navigator.geolocation.getCurrentPosition(
-//       (position) => {
-//         const userLocation = {
-//           lat: position.coords.latitude,
-//           lng: position.coords.longitude   
+  // Check for geolocation support
+  // if (navigator.geolocation) {
+  //   navigator.geolocation.getCurrentPosition(
+  //     (position) => {
+  //       const userLocation = {
+  //         lat: position.coords.latitude,
+  //         lng: position.coords.longitude   
 
-//         };
-//         map.value   
-//         = new google.maps.Map(mapElement, {
-//                 center: userLocation,
-//                 zoom: 13
-//                 });
-//                 // ... rest of your map initialization code
-//             },
-//             (error) => {
-//                 console.error('Geolocation error:', error);
-//                 // Fallback to default center if geolocation fails
-//                 map.value = new google.maps.Map(mapElement, {
-//                 center: { lat: -34.5627, lng: -58.45829 },
-//                 zoom: 13
-//                 });
-//             }
-//             );
-//         } else {
-//             // Browser doesn't support geolocation
-//             map.value = new google.maps.Map(mapElement, {
-//             center: { lat: -34.5627, lng: -58.45829 },
-//             zoom: 13
-//             });
-//         }
+  //       };
+  //       map.value   
+  //       = new google.maps.Map(mapElement, {
+  //               center: userLocation,
+  //               zoom: 13
+  //               });
+  //               // ... rest of your map initialization code
+  //           },
+  //           (error) => {
+  //               console.error('Geolocation error:', error);
+  //               // Fallback to default center if geolocation fails
+  //               map.value = new google.maps.Map(mapElement, {
+  //               center: { lat: -34.5627, lng: -58.45829 },
+  //               zoom: 13
+  //               });
+  //           }
+  //           );
+  //       } else {
+  //           // Browser doesn't support geolocation
+  //           map.value = new google.maps.Map(mapElement, {
+  //           center: { lat: -34.5627, lng: -58.45829 },
+  //           zoom: 13
+  //           });
+  //       }
 
     props.locations.forEach(location => {
     const geocoder = new google.maps.Geocoder();

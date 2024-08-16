@@ -4,7 +4,7 @@
           <div
             class="col-12 d-flex justify-content-center align-items-center text-white"
             style="
-              height: 350px;
+              height: 250px;
               background-image: url('/assets/imgs/bg/bg-profile.jpg');
               background-repeat: no-repeat;
               background-size: cover;
@@ -21,51 +21,53 @@
               </div>
             </div>
           </div>
-          <div class="col-12 my-4">
+          <div class="col-12 my-2">
             <Alert v-if="message.text !== null" :type="message.type">
               {{ message.text }}
             </Alert>
           </div>
-          <div v-if="!formFlag" class="col-12 d-flex justify-content-end px-5">
+          <div v-if="!formFlag" class="col-12 d-flex justify-content-end px-3">
             <button class="btn btn-warning text-white" v-on:click="toCreate()">
               <b> ¿Queres adherirte a nuestra lista? </b>
             </button>
           </div>
-          <div class="col-8 d-flex justify-content-center align-items-center pb-5">
-            <div v-if="!formFlag" class="col-8">
+          <div class="col-12 d-flex justify-content-center align-items-center py-3">
+            <div v-if="!formFlag" class="row">
               <h2 class="mb-5 text-center sr-only">Listado de Lugares de interes</h2>
-              <Map v-if="arrayLocations.length > 0" :locations="arrayLocations ?? []" />
-
-            <template v-for="location in arrayLocations">
-             <div class="row bg-light rounded border my-2">
-                   
-                  <div class="col-12 text-center">
-                    <img
-                      src="imgs/locations/image-default.jpg"
-                      alt="image-default"
-                      class=".img-fluid"
-                      style="max-width: 100%; height: auto"
-                    />
-                  </div>
-                  <div class="col-12 my-3">
-                    <div class="row px-5">
-                      <div class="col-12 pt-2">
-                        <h3 class="h4">{{ location.title }}</h3>
-                      </div>
-                      <div class="col-12">
-                        <div class="row d-flex justify-content-center">
-                          <div class="col-11">
-                            <p>{{ location.detail }}</p>
-                          </div>
-                          <div class="col-1 d-flex align-items-center">
-                            <button class="btn btn-primary" v-on:click="toShow(location)">VER</button>
+                <div class="col-4 list-scrollable" style="height: 450px"> 
+                  <template v-for="location in arrayLocations">
+                    <div class="row bg-light rounded border my-2">
+                        <div class="col-12 text-center">
+                          <img
+                            src="imgs/locations/image-default.jpg"
+                            alt="image-default"
+                            class=".img-fluid"
+                            style="max-width: 100%; height: auto"
+                          />
+                        </div>
+                        <div class="col-12 my-3">
+                          <div class="row px-5">
+                            <div class="col-12 pt-2">
+                              <h3 class="h4">{{ location.title }}</h3>
+                            </div>
+                            <div class="col-12">
+                              <div class="row d-flex justify-content-center">
+                                <div class="col-11">
+                                  <p>{{ location.detail }}</p>
+                                </div>
+                                <div class="col-1 d-flex align-items-center">
+                                  <button class="btn btn-primary" v-on:click="toShow(location)">VER</button>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
                     </div>
-                  </div>
-              </div>
-              </template>
+                  </template>
+                </div>
+                <div class="col-8 "> 
+                  <Map v-if="arrayLocations.length > 0" :locations="arrayLocations ?? []" />
+                </div>
             </div>
             <!-- Formulario de adhesion -->
             <div v-else class="col-8">
@@ -314,4 +316,8 @@ onMounted(async () => {
 });
 </script>
 <style>
+.list-scrollable{
+  height: 60vh;
+  overflow-y: auto;
+}
 </style>

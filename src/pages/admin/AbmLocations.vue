@@ -4,8 +4,8 @@
           <div
             class="col-12 d-flex justify-content-center align-items-center text-white"
             style="
-              height: 350px;
-              background-image: url('./imgs/bg/bg-profile.jpg');
+              height: 250px;
+              background-image: url('/assets/imgs/bg/bg-profile.jpg');
               background-repeat: no-repeat;
               background-size: cover;
               background-position: center;

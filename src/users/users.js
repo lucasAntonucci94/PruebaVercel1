@@ -25,9 +25,10 @@ const usersRef = collection(db, 'users');
             lastName: user.lastName,
             email: user.email,
             avatar: user.avatar || null,
+            photoURLFile: user.photoURLFile,
         })
     });
-
+    debugger
     return users
 }
 
