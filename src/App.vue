@@ -29,14 +29,8 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto">
                         <template v-if="isAuthenticated">
-                            <!-- <li class="nav-item px-2">
-                                <router-link class="nav-link text-white" to="/chatList">
-                                    <i class="fa-solid fa-comments"></i>
-                                    <b class="px-2">Mensajes</b> 
-                                </router-link>
-                            </li> -->
                             <li class="nav-item px-2">
-                                <router-link class="nav-link text-white" to="/chatListIntegrated">
+                                <router-link class="nav-link text-white" to="/chatList">
                                     <i class="fa-solid fa-comments"></i>
                                     <b class="px-2">Mensajes</b> 
                                 </router-link>

@@ -4,7 +4,7 @@
       class="col-12 d-flex justify-content-center align-items-center text-white"
       style="
         height: 350px;
-        background-image: url('./imgs/bg/bg-profile.jpg');
+        background-image: url('/assets/imgs/bg/bg-profile.jpg');
         background-repeat: no-repeat;
         background-size: cover;
         background-position: center;
@@ -14,7 +14,7 @@
       <div class="col-9">
         <div id="portada" class="d-flex align-items-center py-4">
           <img
-            :src="user.photoURLFile ?? 'imgs/image-avatar.png'"
+            :src="user.photoURLFile ?? '/assets/imgs/image-avatar.png'"
             alt="image-avatar"
             style="width: 200px; height: 200px; border-radius: 50%"
           />

@@ -34,15 +34,14 @@
                         v-model="form.body"
                         style="margin-bottom:5px"
                     ></textarea>
-                    <!-- <label for="post-form-image" class="form-label py-2">Imagen:</label>
-                    <input 
-                        type="file" 
-                        id="post-form-image" 
-                        name="image" 
+                    <label for="photoURL" class="form-label my-2">Imagen</label>
+                    <input
+                        type="file"
+                        id="photoURL"
                         class="form-control"
-                         :disabled="isLoading"
-                        @input="form.image = $event.target.files[0]"               
-                    > -->
+                        :disabled="form.isLoading"
+                        @change="loadImage"
+                    />
                 </div>
                 <div class="btn-group form-control">
                     <router-link class="btn btn-secondary " :to="`/${backurl == 'home' ? '' : backurl}`">Volver</router-link>
@@ -59,18 +58,19 @@
 
 <script setup>
 import {onMounted, onUnmounted, ref} from "vue";
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {useAuth} from "../composition/functions.js";
 import {getPostById, updatePost} from "../posts/index.js";
 // import DateFormatted from "../components/DateFormatted.vue";
 import Alert from "../components/Alert.vue";
 
 const route = useRoute();
+const router = useRouter();
 const {user} = useAuth();
 
 const isLoading = ref(true);
 const backurl = ref(route.params.backurl);
-
+const reader = new FileReader();
 const message = ref({
   text: null,
   type: "danger",
@@ -87,10 +87,22 @@ const post = ref({
 const form = ref({
     user: '',
     title: '',
-    body: '',
-    image: '',
+    body: '=',
+    imagePathFile: '',
+    imageBase64: null,
     timestamp: ''
 });
+
+// funciones de carga de imagen
+const loadImage = (ev) => {
+
+const image = ev.target.files[0];
+reader.addEventListener("load", function () {
+  form.value.imageBase64 = reader.result;
+
+});
+reader.readAsDataURL(image);
+};
 
 const update = async () => {
     isLoading.value = true;
@@ -115,9 +127,14 @@ const update = async () => {
             post.value.body = form.value.body
             // form.value.title = ''
             // form.value.body = ''
+            setTimeout(async () => {
+                router.push({
+                    path: "/",
+                });
+            }, 750);
         }   
         catch(err){
-            console.log("error al intentar actualizar un post", err)
+            console.log("Method: updatePost. Error al intentar actualizar un post", err)
         }
         
         isLoading.value = false;
@@ -148,11 +165,12 @@ onMounted(async () => {
     post.value = await getPostById(route.params.id)
         .catch(err => console.error('[GetPostById] ERROR - ', err));
     form.value = {
-            // user: post.value.user,
+            user: post.value.user,
             title: post.value.title,
             body: post.value.body,
-            // image: post.value.image,
-            // timestamp: post.value.user
+            timestamp: post.value.user,
+            imagePathFile: post.value.imagePathFile,
+            // imageUrlFile: post.value.imageUrlFile,
     }
     isLoading.value = false
 

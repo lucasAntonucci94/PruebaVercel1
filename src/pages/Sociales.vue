@@ -13,9 +13,14 @@
             v-for="user in this.users"
             :key="'key_' + user.email"
           >
-            <div class="col-3 d-flex-row align-items-center rounded border-secondary text-center border py-3" style="height: 275px; background-image: linear-gradient(rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.78)), url('imgs/image-avatar2.png'); background-repeat: no-repeat; background-size: cover;" >
+            <div class="col-3 d-flex-row align-items-center rounded border-secondary text-center border py-3" style="height: 275px; background-image: linear-gradient(rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.78)), url('/assets/imgs/image-avatar2.png'); background-repeat: no-repeat; background-size: cover;" >
               <div class="wrapper " style="height: 100%;">
-                <router-link id="buttonChat" class="text-white rounded bg-dark p-2" style="border-radius: 10px !important; margin-right: 4px;" :to="`/user/${user.email}`"><i class="fa-solid fa-comment-dots"></i></router-link>    
+                <div>
+
+                  <router-link id="buttonProfile" class="text-white rounded bg-dark p-2" style="border-radius: 10px !important; margin-right: 4px;" :to="`/user/${user.email}`"><i class="fa-solid fa-add"></i></router-link>    
+                  <router-link id="buttonProfile" class="text-white rounded bg-dark p-2" style="border-radius: 10px !important; margin-right: 4px;" :to="`/user/${user.email}`"><i class="fa-solid fa-eye"></i></router-link>    
+                  <router-link id="buttonChat" class="text-white rounded bg-dark p-2" style="border-radius: 10px !important; margin-right: 4px;" :to="`/user/${user.email}/sociales/chat`"><i class="fa-solid fa-comment-dots"></i></router-link>    
+                </div>
                 <p id="userName" class="pt-4 h5" > <b> {{ user.displayName ?? user.email }}</b></p>
               </div>  
             </div>
@@ -109,7 +114,6 @@ export default {
       this.form.message = "";
     },
     async getUsers() {
-    
       var users = await getAllUsers({ ...this.form });
       var filteredUsers = []
       users.forEach(user => {

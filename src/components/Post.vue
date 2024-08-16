@@ -134,11 +134,11 @@ const props = defineProps({
 //elimina un posteo
 const toDelete = async (id) => {
   const success = await deletePost(id);
-  isLoading.value = false;
+  // isLoading.value = false;
 };
-const updatePostUserImage = (newPhotoURLFile) => {
-  post.user.photoURLFile = newPhotoURLFile;
-};
+// const updatePostUserImage = (newPhotoURLFile) => {
+//   post.user.photoURLFile = newPhotoURLFile;
+// };
 
 onMounted(async () => {
   // COMO SOLUCION A LA FALLA EN REFRESCAR LAS REFERENCIAS SE PUEDE CORRER ESTO
@@ -147,8 +147,8 @@ onMounted(async () => {
   //           props.post.user.photoURLFile = url
   //       })
   // $on('update-post-user-image', updatePostUserImage);
-  console.log("props.post")
-  console.log(props.post)
+  // console.log("props.post")
+  // console.log(props.post)
 
 })
 </script>

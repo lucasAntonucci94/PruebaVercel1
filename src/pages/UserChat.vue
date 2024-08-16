@@ -8,7 +8,7 @@
       </div>
       <div class="col-5">
         <img
-          src="imgs/image-chat.png"
+          src="/assets/imgs/image-chat.png"
           alt="image-default"
           class=".img-fluid"
           style="max-width: 100%; height: auto"
@@ -16,7 +16,7 @@
       </div>
       <div class="col-7">
         <h1 class="mb-4 h4">Chat con {{ otherUser.email }}</h1>
-        <div class="p-3 mb-3 border rounded" style="min-height: 400px">
+        <div class="p-3 mb-3 border rounded chat-messages" style="min-height: 400px">
           <div v-for="message in messages" class="mb-2">
             <b
               >(<DateFormatted :date="message.created_at" />)
@@ -43,7 +43,7 @@
           class="btn btn-dark mt-4 w-100 border border-light"
           :to="`/${(backurl != 'user') ? backurl : backurl+'/'+otherUser.email }`"
         >
-          <b class="h5 text-decoration-none"> VOLVER AL PERFIL </b>
+          <b class="h5 text-decoration-none"> VOLVER </b>
         </router-link>
       </div>
     </div>
@@ -100,3 +100,9 @@ onUnmounted(() => {
   unsubscribe();
 });
 </script>
+<style>
+.chat-messages {
+  height: 60vh;
+  overflow-y: auto;
+}
+</style>

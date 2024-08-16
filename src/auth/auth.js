@@ -212,17 +212,16 @@ export async function doUpdateProfile({displayName, photo, firstName, lastName})
             },
             photoURLFile: userData.photoURLFile || null,
         })
+        
         await Promise.all(promises)
         userData.displayName = displayName;
+        
         if(photo)
             userData.photoURL = profileData.photoURL;
 
         notifyAll();
         loadProfileInfo(userData)
-        console.log(
-            {success:true, newImage: userData.photoURL}
-        )
-        debugger
+
         return {success:true, photoURLFile: userData.photoURLFile};
     } catch(err) {
         return {success:false, photoURLFile: null};

@@ -2,7 +2,7 @@
   <section class="col-8 bg-light d-flex justify-content-center align-items-center " style="height:  100%;">
       <div class="col-12 py-2">
         <!-- <h1 class="mb-4 h4 sr-only">Chat con : {props.selectedUserEmail}</h1> -->
-        <div ref="chatMessages" class="p-3 mb-3 border rounded  chat-messages">
+        <div ref="chatMessages" class="p-3 mb-3 border rounded chat-messages">
           <div v-for="message in messages" class="mb-2">
             <b>
               (<DateFormatted :date="message.created_at" />)
@@ -91,8 +91,8 @@ const messages = ref([]);
 let unsubscribe = () => {};
 
 onMounted(async () => {
-  console.log("props.selectedUserEmail")
-  console.log(props.selectedUserEmail)
+  // console.log("props.selectedUserEmail")
+  // console.log(props.selectedUserEmail)
   if(props.selectedUserEmail != null && props.selectedUserEmail != ""){
     selectedUser.value = await getUserProfileByEmail(props.selectedUserEmail).catch(
       (err) => console.error("[UserChat] getUserProfileByEmail - Error: ", err)

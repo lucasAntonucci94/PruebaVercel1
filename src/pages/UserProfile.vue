@@ -4,12 +4,12 @@
   <div class="row d-flex justify-content-center align-items-center">
       <div
         class="col-12 d-flex justify-content-center align-items-center text-white"
-        style="height: 350px; background-image: url('./imgs/bg/bg-profile.jpg');background-repeat: no-repeat; background-size: cover; background-position: center;" 
+        style="height: 350px; background-image: url('/assets/imgs/bg/bg-profile.jpg');background-repeat: no-repeat; background-size: cover; background-position: center;" 
       >
         <div class="col-9">
           <div id="portada" class="d-flex align-items-center py-4">
             <img
-              src="imgs/image-avatar2.png"
+              src="/assets/imgs/image-avatar2.png"
               alt="image-avatar"
               style="width: 200px; height: 200px"
             />
@@ -19,7 +19,7 @@
           </div>
         </div>
         <div class="col-2 text-center">
-           <router-link class="text-white rounded bg-warning p-2" :to="`/user/${user.email}/user/chat`"><i class="fa-solid fa-comment-dots"></i> Ver mensajes privados</router-link>
+           <router-link class="text-white rounded bg-warning p-2" :to="`/user/${user.email}/user/chat`"><i class="fa-solid fa-comment-dots"></i> Enviar mensaje</router-link>
         </div>
     </div>
     <div v-if="!toEdit" class="col-8 py-5">

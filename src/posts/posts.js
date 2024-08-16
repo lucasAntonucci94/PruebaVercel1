@@ -13,7 +13,6 @@ const postRef = collection(db, 'posts');
  */
 export async function savePost({user, title, body, categories, imageBase64}) {
     try {
-        debugger
         user.isAdmin = false;
         const data = {
             id: newGuid(),
@@ -36,14 +35,12 @@ export async function savePost({user, title, body, categories, imageBase64}) {
                 //       }
                 // }
             });
-            debugger
             data.imagePathFile = filePath;
             
             // obtengo uri de la imagen cargada
             await getFileUrl(filePath).then(url=>{
                 data.imageUrlFile = url
             })
-            debugger
         }
         return await addDoc(postRef, data);
     } catch(err) {
@@ -102,7 +99,9 @@ export async function find(filters) {
             image: post.image,
             user: post.user,
             categories: post.categories,
-            timestamp: post.timestamp
+            timestamp: post.timestamp,
+            imagePathFile: post.imagePathFile,
+            imageUrlFile: post.imageUrlFile
         })
     });
 
@@ -122,13 +121,16 @@ export async function find(filters) {
      
     const post = snapshot.docs[0].data();
 
+    const filePath = 'post/' + post.user.email + '/' + post.id + '.jpg';
+
     return {
         id: post.id,
         title: post.title,
         body: post.body,
+        user: post.user,
         timestamp: post.timestamp,
-        imagePathFile: post.imagePathFile,
-        imageUrlFile: post.imageUrlFile
+        imagePathFile: post.imagePathFile ?? filePath,
+        imageUrlFile: post.imageUrlFile ?? null
     };
 }
 
@@ -137,16 +139,32 @@ export async function find(filters) {
  * Actualiza los datos de un POST
  * 
  * @param {string} id
- * @param {{title: string, body: string, image: string}} data
+ * @param {{idDoc: string, data: Object}} data
  */
- export const updatePost = async (id, data) => {
-    
-   const docRef = doc(db, 'posts', id);
-   await updateDoc(docRef, {
+ export const updatePost = async (idDoc, data) => {
+    if(data.imageBase64 != null && data.imageBase64 != "") {
+        const filePath = data.imagePathFile;
+        var response = await uploadFile(filePath, data.imageBase64, {
+            // customMetadata: {
+            //     ...{
+            //         width: user.value?.avatar?.width,
+            //         height: user.value?.avatar?.height,
+            //       }
+            // }
+        });
+        
+        // obtengo URL de la imagen cargada
+        await getFileUrl(filePath).then(url=>{
+            data.imageUrlFile = url
+        })
+    }
+
+    const docRef = doc(db, 'posts', idDoc);
+    await updateDoc(docRef, {
        title: data.title,
        body: data.body,
-    //    imagePathFile: post.imagePathFile,
-    //    imageUrlFile: post.imageUrlFile
+       imagePathFile: data.imagePathFile,
+       imageUrlFile: data.imageUrlFile ?? null
      });
 }
 
@@ -229,7 +247,6 @@ export function reloadPostImage(posts, photoURLFile) {
         posts.forEach(post => {
           post.photoURLFile = photoURLFile;
         });
-        debugger
         return posts;
     } catch(err) {
         return [];

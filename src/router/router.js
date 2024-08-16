@@ -1,7 +1,6 @@
 import {createRouter, createWebHashHistory} from "vue-router"
 import Home from "../pages/Home.vue"
 import ChatList from "../pages/ChatList.vue"
-import ChatListIntegrated from "../pages/ChatListIntegrated.vue"
 import Sociales from "../pages/Sociales.vue"
 import Profile from "../pages/Profile.vue"
 import Explore from "../pages/Explorar.vue"
@@ -52,8 +51,8 @@ const routes = [
         }
     },
     {
-        path: '/chatListIntegrated',
-        component: ChatListIntegrated,
+        path: '/chatList',
+        component: ChatList,
         meta: {
             requiresAuth: true,
         }
