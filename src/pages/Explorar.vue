@@ -55,8 +55,9 @@
                                 <div class="col-11">
                                   <p>{{ location.detail }}</p>
                                 </div>
-                                <div class="col-1 d-flex align-items-center">
-                                  <button class="btn btn-primary" v-on:click="toShow(location)">VER</button>
+                                <div class="col-3 d-flex align-items-center">
+                                  <button class="btn btn-primary" v-on:click="toShow(location)">Detalle</button>
+                                  <button class="btn btn-primary" v-on:click="centerMap(location)">Mapa</button>
                                 </div>
                               </div>
                             </div>
@@ -66,7 +67,7 @@
                   </template>
                 </div>
                 <div class="col-8 "> 
-                  <Map v-if="arrayLocations.length > 0" :locations="arrayLocations ?? []" />
+                  <Map v-if="arrayLocations.length > 0" :locations="arrayLocations ?? []" :selectedLocation="locationRef.value" />
                 </div>
             </div>
             <!-- Formulario de adhesion -->
@@ -153,7 +154,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch,onMounted, onUnmounted, defineEmits  } from "vue";
 import {
   createLocation,
   updateLocation,
@@ -162,7 +163,6 @@ import {
 } from "../locations/index.js";
 import ButtonSubmitLoader from "../components/ButtonSubmitLoader.vue";
 import { useAuth } from "../composition/functions.js";
-import { onMounted, onUnmounted } from "vue";
 import Loader from "../components/Loader.vue";
 import Alert from "../components/Alert.vue";
 import Map from "../components/Map.vue";
@@ -173,8 +173,6 @@ const locationRef = ref({});
 const isLoading = ref(false);
 const formFlag = ref(false);
 const showFlag = ref(false);
-// const photoURL = ref(null);
-// const previewImage = ref(null);
 
 const message = ref({
   text: null,
@@ -216,6 +214,13 @@ const toShow = (location) => {
   if(location != null){
     locationRef.value = location
   }
+};
+
+//Cambia formFlag que oculta el listado y muestra el formulario
+const centerMap = (location) => {
+  locationRef.value = location
+  // this.$emit('locationSelected', location)
+  // emit('locationSelected', location)
 };
 //Cambia formFlag que oculta el listado y muestra el formulario
 const toCreate = () => {

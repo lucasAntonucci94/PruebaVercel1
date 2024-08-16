@@ -41,7 +41,7 @@ import {
   savePrivateMessage,
 } from "../chat/chat.js";
 
-const emit = defineEmits(['clearMessages']);
+// const emit = defineEmits(['clearMessages']);
 const route = useRoute();
 const { user } = useAuth();
 const formMessage = ref("");

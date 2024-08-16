@@ -97,7 +97,7 @@ export default {
     },
     handleChatSelected(userEmail) {
       this.selectedChatUser = userEmail;
-      this.$emit('clearMessages');
+      // this.$emit('clearMessages');
     },
   },
   mounted() {
