@@ -38,7 +38,7 @@ module.exports = {
                 {
                     loader: 'file-loader',
                     options: {
-                        outputPath: 'assets/imgs', // Cambia esta ruta según tus necesidades
+                        outputPath: 'assets/imgs',
                     }
                 }
                 ]
