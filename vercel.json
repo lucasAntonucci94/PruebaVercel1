@@ -1,3 +1,6 @@
 {
-    "framework": "vue"
+    "framework": "vue",
+    "build": {
+        "outputDirectory": "dist"
+    }
   }
