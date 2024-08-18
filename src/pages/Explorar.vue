@@ -13,10 +13,7 @@
             v-if="!formFlag"
           >
             <div class="row">
-              <div
-                id="portada"
-                class="col-12 d-flex align-items-center justify-content-center py-4"
-              >
+              <div id="portada" class="col-12 d-flex align-items-center justify-content-center py-4">
                 <h1 class="px-4">EXPLORAR</h1>
               </div>
             </div>
@@ -37,12 +34,12 @@
                 <div class="col-4 list-scrollable" style="height: 450px"> 
                   <template v-for="location in arrayLocations">
                     <div class="row bg-light rounded border my-2">
-                        <div class="col-12 text-center">
+                        <div v-if="location.imageUrlFile != null" class="col-12 text-center">
                           <img
-                            src="imgs/locations/image-default.jpg"
+                            :src="location.imageUrlFile"
                             alt="image-default"
                             class=".img-fluid"
-                            style="max-width: 100%; height: auto"
+                            style="max-width: 100%; max-height: 275px"
                           />
                         </div>
                         <div class="col-12 my-3">
@@ -116,6 +113,26 @@
                       v-model="formData.phone"
                     />
                   </div>
+                  <div class="col-12">
+                    <label for="imageBase64" class="form-label my-2">Imagen</label>
+                    <input
+                      type="file"
+                      id="imageBase64"
+                      class="form-control"
+                      :disabled="isLoading"
+                      @change="loadImage"
+                    />
+                    <div class="p-5" v-if="imageBase64 !== null">
+                      <p>Previsualización de la imagen</p>
+                      <img 
+                        :src="imageBase64"
+                        alt=""
+                        ref="previewImage"
+                        class=".img-fluid"    
+                        style="width: 100%;"
+                      />
+                    </div>
+                  </div>
                   <div class="col-12 my-3">
                     <ButtonSubmitLoader :loading="isLoading">
                       <strong> ACEPTAR </strong>
@@ -173,6 +190,9 @@ const locationRef = ref({});
 const isLoading = ref(false);
 const formFlag = ref(false);
 const showFlag = ref(false);
+const imageBase64 = ref(null);
+const previewImage = ref(null);
+const reader = new FileReader();
 
 const message = ref({
   text: null,
@@ -193,7 +213,7 @@ const loadImage = (ev) => {
   const reader = new FileReader();
   const image = ev.target.files[0];
   reader.addEventListener("load", function () {
-    photoURL.value = reader.result;
+    imageBase64.value = reader.result;
   });
   reader.readAsDataURL(image);
 };
@@ -250,13 +270,13 @@ const saveLocation = () => {
     if (locationRef.value.idDoc == null || locationRef.value.idDoc == "") {
       const success = createLocation({
         ...formData.value,
-        // photo: {
-        //   name: photoURL.value,
-        //   dimensions: {
-        //     width: previewImage.value.width,
-        //     height: previewImage.value.height,
-        //   },
-        // },
+        photo: {
+          imageBase64: imageBase64.value,
+          dimensions: {
+            width: previewImage.value.width,
+            height: previewImage.value.height,
+          },
+        },
       });
       if (success) {
         isLoading.value = false;

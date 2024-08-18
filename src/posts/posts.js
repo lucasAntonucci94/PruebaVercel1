@@ -35,6 +35,7 @@ export async function savePost({user, title, body, categories, imageBase64}) {
                 //       }
                 // }
             });
+            
             data.imagePathFile = filePath;
             
             // obtengo uri de la imagen cargada
@@ -228,7 +229,9 @@ export async function find(filters) {
                 title: post.title,
                 body: post.body,
                 image: post.image,
-                timestamp: post.timestamp
+                timestamp: post.timestamp,
+                imagePathFile: post.imagePathFile,
+                imageUrlFile: post .imageUrlFile ?? null
             };
         });
         callback(posts);

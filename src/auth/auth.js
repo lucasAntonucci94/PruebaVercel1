@@ -56,13 +56,12 @@ onAuthStateChanged(auth, user => {
     notifyAll();
 });
 
-
 /**
  * Carga la data completa del perfil del usuario.
  *
  * @param {{email: string, photoURL: string}} user
  */
- function loadProfileInfo(user) {
+function loadProfileInfo(user) {
     
     const promiseFile = getFileUrl(user.photoURL).then(url => {
         userData.photoURLFile = url;

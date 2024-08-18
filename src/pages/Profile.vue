@@ -3,7 +3,7 @@
     <div
       class="col-12 d-flex justify-content-center align-items-center text-white"
       style="
-        height: 350px;
+        height: 250px;
         background-image: url('/assets/imgs/bg/bg-profile.jpg');
         background-repeat: no-repeat;
         background-size: cover;
@@ -235,10 +235,15 @@ let unsubscribe = () => {};
 // Al montar el componente cargo los posteos de mi usuario
 onMounted(async () => {
   unsubscribe = await subscribeToIncomingProfilePosts(user.value.id, (data) => {
-    posts.value = data;
+    posts.value = data.reverse();
     // photoURL.value = reader.result;
   });
 });
+
+onUnmounted(async () => {
+  unsubscribe()
+});
+
 </script>
 
 <style></style>

@@ -81,11 +81,18 @@ async function loadMessagesForSelectedUser(selectedUserEmail) {
   );
 }
 
-//no funciona re veer, deberia tirar la barra de scroll para abajo de todo en caso que tenga muchos chats y no entren a la vista. Para mostrar siempre los ultimos mensajes enviados.
-// function scrollToBottom() {
-//   const chatMessagesElement = this.$refs.chatMessages;
-//   chatMessagesElement.scrollTop = chatMessagesElement.scrollHeight;
-// }
+// no funciona re veer, deberia tirar la barra de scroll para abajo de todo en caso que tenga muchos chats y no entren a la vista. Para mostrar siempre los ultimos mensajes enviados.
+function scrollToBottom() {
+  if(this.$refs.chatMessages){
+    console.log('this.$refs.chatMessages')
+    console.log(this.$refs.chatMessages)
+    const chatMessagesElement = this.$refs.chatMessages;
+    chatMessagesElement.scrollTop = 0;
+  }else{
+    console.log('this.$refs.chatMessages')
+    console.log(this.$refs.chatMessages)
+  }
+}
 
 const messages = ref([]);
 let unsubscribe = () => {};
@@ -102,12 +109,12 @@ onMounted(async () => {
       selectedUser.value.email,
       (data) => (messages.value = data)
     );
+    scrollToBottom();
   }
 });
 
 onUnmounted(() => {
   unsubscribe();
-  // scrollToBottom();
 });
 </script>
 

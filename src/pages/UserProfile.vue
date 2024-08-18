@@ -9,9 +9,9 @@
         <div class="col-9">
           <div id="portada" class="d-flex align-items-center py-4">
             <img
-              src="/assets/imgs/image-avatar2.png"
+              :src="user.photoURLFile ?? '/assets/imgs/image-avatar.png'"
               alt="image-avatar"
-              style="width: 200px; height: 200px"
+              style="width: 200px; height: 200px; border-radius: 50%"
             />
             <h1 class="px-4">
               Perfil de {{ user.displayName || user.email }}

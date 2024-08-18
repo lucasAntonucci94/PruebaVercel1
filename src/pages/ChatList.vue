@@ -8,29 +8,30 @@
         </p>
       </template>
       <template v-else>
-        <section class="col-4"  style="height:  100%;">
-          <div id="chat-message-list">
+        <section class="col-4">
+          <div id="chat-list">
             <Loader v-if="isLoading.value" class="gray" />
             <template v-else>
-              <div class="bg-light px-5 py-2 rounded border shadow">
+              <div v-if="chats.length > 0" class="bg-light rounded border shadow list-scrollable">
                 <div
-                  v-for="chat in chats"
+                  v-for="chat in chats" :key="chat.id"
                   style="text-decoration: none; background-color: #f3f3f3"
-                  class="m-1 text-center rounded border border-secondary p-3"
+                  class="m-1 rounded border border-secondary p-2"
                 >
                   <div class="row d-flex justify-content-center align-items-center">
-                      <div class="col-1">
+                      <div class="col-1 ">
                         <img
-                          :src="chat.user != null ? chat.user.imageUrl : '/assets/imgs/image-avatar.png'"
+                          :src="chat.user.photoURLFile != null ? chat.user?.photoURLFile : '/assets/imgs/image-avatar.png'"
                           alt="image-avatar"
                           style="width: 45px; height: 45px; border-radius: 35px;"
                         />
                       </div>
-                      <div class="col-11">
+                      <div class="col-11 px-5">
                         <b class="text-secondary">
-                          <a href="#" v-on:click.prevent="handleChatSelected(chat.user)">
-                            <span class="text-dark "> {{ chat.user }} </span>
+                          <a href="#" v-on:click.prevent="handleChatSelected(chat.user.email)">
+                            <span class="text-dark "> {{ chat.user.email }} </span>
                             (Ver chat)
+                            <!-- <i class="fa-solid fa-caret-right"></i> -->
                           </a>
                           <br>
                           (<DateFormatted :date="chat.timestamp" />)
@@ -42,13 +43,15 @@
             </template>
           </div>
       </section>
-      <ChatDetails :selected-user-email="selectedChatUser" />
+      <ChatDetails :selectedUserEmail="selectedChatUser" />
     </template>
     </div>
   </section>
 </template>
 <script>
+
 import { getChatsByEmail } from "../chat/chat.js";
+import { getUserProfileByEmail } from "../users/index.js";
 import { listenForAuthChanges } from "../auth/auth.js";
 import DateFormatted from "../components/DateFormatted.vue";
 import ChatDetails from "../components/ChatDetails.vue";
@@ -77,36 +80,50 @@ export default {
     }
   },
   methods: {
+    handleChatSelected(userEmail) {
+      this.selectedChatUser = userEmail;
+    },
     async getChatsByUserEmail(email) {
       this.isLoading = true;
-      const chats = await getChatsByEmail(email);
-      var chatsToShow = [];
-      chats.forEach((chat) => {
-        Object.keys(chat.user).forEach((element) => {
-          if (element != this.user.email) {
-            
-            chatsToShow.push({
+      const registeredChats = await getChatsByEmail(email);
+      this.getChatsFullData(registeredChats).then((chats)=>{
+        this.chats = chats
+      })
+    },
+    async getChatsFullData(registeredChats) {
+        var arrayChats = [];
+      // Creo el listado array de chats a partir del registro de chats de base de datos
+      registeredChats.forEach((chat) => {
+        Object.keys(chat.user).forEach(async (element) =>  {
+          if (element != undefined && element != null && this.validateEmail(element) && element != this.user.email) {
+            arrayChats.push({
               id: chat.idDoc,
-              user: element,
+              user: {email: element},
               timestamp: chat.created_at,
             });
           }
         });
       });
-      return chatsToShow;
-    },
-    handleChatSelected(userEmail) {
-      this.selectedChatUser = userEmail;
-      // this.$emit('clearMessages');
-    },
-  },
-  mounted() {
-    this.authUnsubscribe = listenForAuthChanges((userData) => {
-      this.user = userData;
-      this.getChatsByUserEmail(userData.email).then((data) => {
-        this.chats = data;
+      // Crear un array de promesas para cada llamada a getUserProfileByEmail
+      const promises = arrayChats.map(async (chat) => {
+        chat.user = await getUserProfileByEmail(chat.user.email);
+        return chat;
       });
-      this.isLoading = false;
+
+      // Esperar a que todas las promesas se resuelvan
+      return Promise.all(promises);
+    },
+    validateEmail(email) {
+      const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(String(email).toLowerCase());   
+    }
+  },
+   async mounted() {
+    this.authUnsubscribe = listenForAuthChanges(async (userData) => {
+      this.user = userData;
+    });
+    await this.getChatsByUserEmail(this.user.email).then(()=>{
+      this.isLoading = false
     });
   },
   unmounted() {
@@ -115,5 +132,9 @@ export default {
   },
 };
 </script>
-
-<style></style>
+<style>
+.list-scrollable{
+  height: 60vh;
+  overflow-y: auto;
+}
+</style>

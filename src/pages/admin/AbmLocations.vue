@@ -131,26 +131,26 @@
                       v-model="formData.phone"
                     />
                   </div>
-                  <!-- <div class="col-6">
-                    <label for="photoURL" class="form-label my-2">Imagen</label>
+                  <div class="col-12">
+                    <label for="imageBase64" class="form-label my-2">Imagen</label>
                     <input
                       type="file"
-                      id="photoURL"
+                      id="imageBase64"
                       class="form-control"
                       :disabled="isLoading"
                       @change="loadImage"
                     />
-                    <div class="p-5" v-if="photoURL !== null">
+                    <div class="p-5" v-if="imageBase64 !== null">
                       <p>Previsualización de la imagen</p>
                       <img 
-                        :src="photoURL"
+                        :src="imageBase64"
                         alt=""
                         ref="previewImage"
                         class=".img-fluid"    
                         style="width: 100%;"
                       />
                     </div>
-                  </div> -->
+                  </div>
                   <div class="col-12 my-3">
                     <ButtonSubmitLoader :loading="isLoading">
                       <strong> ACEPTAR </strong></ButtonSubmitLoader
@@ -215,8 +215,9 @@ const locationRef = ref({});
 const isLoading = ref(false);
 const formFlag = ref(false);
 const showFlag = ref(false);
-// const photoURL = ref(null);
-// const previewImage = ref(null);
+const imageBase64 = ref(null);
+const previewImage = ref(null);
+const reader = new FileReader();
 
 const message = ref({
   text: null,
@@ -237,7 +238,7 @@ const loadImage = (ev) => {
   const reader = new FileReader();
   const image = ev.target.files[0];
   reader.addEventListener("load", function () {
-    photoURL.value = reader.result;
+    imageBase64.value = reader.result;
   });
   reader.readAsDataURL(image);
 };
@@ -291,13 +292,13 @@ const saveLocation = () => {
     if (locationRef.value.idDoc == null || locationRef.value.idDoc == "") {
       const success = createLocation({
         ...formData.value,
-        // photo: {
-        //   name: photoURL.value,
-        //   dimensions: {
-        //     width: previewImage.value.width,
-        //     height: previewImage.value.height,
-        //   },
-        // },
+        photo: {
+          imageBase64: imageBase64.value,
+          dimensions: {
+            width: previewImage.value.width,
+            height: previewImage.value.height,
+          },
+        },
       });
       if (success) {
         isLoading.value = false;
@@ -317,6 +318,14 @@ const saveLocation = () => {
     } else {
       const success = updateLocation(locationRef.value.idDoc, {
         ...formData.value,
+        photo: {
+          imageBase64: imageBase64.value,
+          pathFile: locationRef.value.imagePathFile ?? null,
+          dimensions: {
+            width: previewImage.value.width,
+            height: previewImage.value.height,
+          },
+        },
       });
       if (success) {
         isLoading.value = false;
@@ -339,11 +348,13 @@ const saveLocation = () => {
 
 //elimina un lugar de interes
 const toEdit = async (location) => {
+  debugger
   locationRef.value.idDoc = location.idDoc;
   formData.value.title = location.title;
   formData.value.detail = location.detail;
   formData.value.address = location.address;
   formData.value.phone = location.phone;
+  
   changeFlag();
   // const success = await updateLocation(id)
   isLoading.value = false;
