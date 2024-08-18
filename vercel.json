@@ -1,9 +1,3 @@
 {
-    "framework": "vue",
-    "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "/public/$1"
-        }
-    ]
+    "framework": "vue"
   }
