@@ -7,10 +7,10 @@
         </Alert>
       </div>
       <div class="col-6">
-        <img src="imgs/image-login.jpg" 
+        <img src="/assets/imgs/catanddog3.png" 
           alt="image-default"
           class=".img-fluid"
-          style="max-width: 100%; height: auto" />
+          style="max-width: 70%; height: auto" />
       </div>
 
       <div class="col-6 p-5">

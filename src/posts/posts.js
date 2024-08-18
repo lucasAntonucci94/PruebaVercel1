@@ -1,5 +1,7 @@
 import { getFirestore, addDoc, deleteDoc, doc, getDocs, updateDoc, collection, onSnapshot, orderBy, query, serverTimestamp, where, limit } from "firebase/firestore";
 import {newGuid} from '../helpers/newGuid.js'
+import {getFileMetadata, getFileUrl, uploadFile} from "../storage/index.js";
+
 const db = getFirestore();
 const postRef = collection(db, 'posts');
 
@@ -9,18 +11,38 @@ const postRef = collection(db, 'posts');
  * @param {{id: string, user: Object, title: string, body: string}} data
  * @returns {Promise<void>}
  */
-export async function savePost({user, title, body, categories}) {
-    user.isAdmin = false;
-    const data = {
-        id: newGuid(),
-        user,
-        title,
-        body,
-        categories,
-        timestamp: serverTimestamp(),
-    };
-
+export async function savePost({user, title, body, categories, imageBase64}) {
     try {
+        user.isAdmin = false;
+        const data = {
+            id: newGuid(),
+            user,
+            title,
+            body,
+            categories,
+            timestamp: serverTimestamp(),
+            imagePathFile: null,
+            imageUrlFile: null,
+        };
+
+        if(imageBase64 != null) {
+            const filePath = 'post/' + user.email + '/' + data.id + '.jpg';
+            var response = await uploadFile(filePath, imageBase64, {
+                // customMetadata: {
+                //     ...{
+                //         width: user.value?.avatar?.width,
+                //         height: user.value?.avatar?.height,
+                //       }
+                // }
+            });
+            
+            data.imagePathFile = filePath;
+            
+            // obtengo uri de la imagen cargada
+            await getFileUrl(filePath).then(url=>{
+                data.imageUrlFile = url
+            })
+        }
         return await addDoc(postRef, data);
     } catch(err) {
         console.error('Error al grabar el Post. ', err);
@@ -44,10 +66,11 @@ export async function savePost({user, title, body, categories}) {
                     id : post.id,
                     title: post.title,
                     body: post.body,
-                    image: post.image,
                     user: post.user,
                     categories: post.categories,
-                    timestamp: post.timestamp
+                    timestamp: post.timestamp,
+                    imagePathFile: post.imagePathFile,
+                    imageUrlFile: post.imageUrlFile
                 }
             });
         callback(posts);
@@ -77,7 +100,9 @@ export async function find(filters) {
             image: post.image,
             user: post.user,
             categories: post.categories,
-            timestamp: post.timestamp
+            timestamp: post.timestamp,
+            imagePathFile: post.imagePathFile,
+            imageUrlFile: post.imageUrlFile
         })
     });
 
@@ -97,12 +122,16 @@ export async function find(filters) {
      
     const post = snapshot.docs[0].data();
 
+    const filePath = 'post/' + post.user.email + '/' + post.id + '.jpg';
+
     return {
         id: post.id,
         title: post.title,
         body: post.body,
-        image: post.image,
-        timestamp: post.timestamp
+        user: post.user,
+        timestamp: post.timestamp,
+        imagePathFile: post.imagePathFile ?? filePath,
+        imageUrlFile: post.imageUrlFile ?? null
     };
 }
 
@@ -111,15 +140,32 @@ export async function find(filters) {
  * Actualiza los datos de un POST
  * 
  * @param {string} id
- * @param {{title: string, body: string, image: string}} data
+ * @param {{idDoc: string, data: Object}} data
  */
- export const updatePost = async (id, data) => {
-    
-   const docRef = doc(db, 'posts', id);
-   await updateDoc(docRef, {
+ export const updatePost = async (idDoc, data) => {
+    if(data.imageBase64 != null && data.imageBase64 != "") {
+        const filePath = data.imagePathFile;
+        var response = await uploadFile(filePath, data.imageBase64, {
+            // customMetadata: {
+            //     ...{
+            //         width: user.value?.avatar?.width,
+            //         height: user.value?.avatar?.height,
+            //       }
+            // }
+        });
+        
+        // obtengo URL de la imagen cargada
+        await getFileUrl(filePath).then(url=>{
+            data.imageUrlFile = url
+        })
+    }
+
+    const docRef = doc(db, 'posts', idDoc);
+    await updateDoc(docRef, {
        title: data.title,
        body: data.body,
-       // image: data.image
+       imagePathFile: data.imagePathFile,
+       imageUrlFile: data.imageUrlFile ?? null
      });
 }
 
@@ -131,7 +177,6 @@ export async function find(filters) {
  * @param {{title: string, body: string, image: string}} data
  */
  export const deletePost = async (id) => {
-    debugger
     const docRef = doc(db, 'posts', id);
     await deleteDoc(docRef);
  }
@@ -152,11 +197,7 @@ export async function find(filters) {
     postQuerySnapshot.forEach((doc) => {
         postIds.push(doc.id);
     });
-    
-    var aux = {
-        id,
-        ...data
-    }
+
     // 2- Update User From POSTS
     postIds.forEach(idPost => {
         updateDoc(doc(db, 'posts', idPost), {
@@ -188,9 +229,29 @@ export async function find(filters) {
                 title: post.title,
                 body: post.body,
                 image: post.image,
-                timestamp: post.timestamp
+                timestamp: post.timestamp,
+                imagePathFile: post.imagePathFile,
+                imageUrlFile: post .imageUrlFile ?? null
             };
         });
         callback(posts);
     });
+}
+
+
+/**
+ * Actualiza la imagen de usuario de cada post.
+ *
+ * @param {{photoURLFile: string}} options
+ * @returns {Promise<Array>}
+ */
+export function reloadPostImage(posts, photoURLFile) {
+    try {
+        posts.forEach(post => {
+          post.photoURLFile = photoURLFile;
+        });
+        return posts;
+    } catch(err) {
+        return [];
+    }
 }

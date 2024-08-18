@@ -1,5 +1,7 @@
 import { getFirestore, addDoc, doc, getDocs, updateDoc, deleteDoc, collection, onSnapshot, orderBy, query, serverTimestamp, where, limit } from "firebase/firestore";
 import {newGuid} from '../helpers/newGuid.js'
+import {getFileMetadata, getFileUrl, uploadFile} from "../storage/index.js";
+
 const db = getFirestore();
 const locationRef = collection(db, 'locations');
 
@@ -9,7 +11,7 @@ const locationRef = collection(db, 'locations');
  * @param {{title: string, detail: string, address: string, socialNetworkLink: string}} data
  * @returns {Promise<void>}
  */
-export async function createLocation({title, detail, address, phone, socialNetworkLink}) {
+export async function createLocation({title, detail, address, phone, socialNetworkLink, photo}) {
     
     const data = {
         id: newGuid(),
@@ -19,8 +21,24 @@ export async function createLocation({title, detail, address, phone, socialNetwo
         phone,
         socialNetworkLink,
         timestamp: serverTimestamp(),
+        imagePathFile: null,
+        imageUrlFile: null,
     };
 
+    if(photo.imageBase64 != null && photo.imageBase64 != "") {
+        const filePath = 'location/' + data.id + '.jpg';
+        var response = await uploadFile(filePath, photo.imageBase64, {
+            customMetadata: {
+                ...photo.dimensions
+            }
+        });
+        data.imagePathFile = filePath
+        // obtengo URL de la imagen cargada
+        await getFileUrl(filePath).then(url=>{
+            data.imageUrlFile = url
+        })
+    }
+    
     try {
         return await addDoc(locationRef, data);
     } catch(err) {
@@ -51,8 +69,11 @@ export async function createLocation({title, detail, address, phone, socialNetwo
                     phone:location.phone,
                     socialNetworkLink:location.socialNetworkLink,
                     timestamp: serverTimestamp(),
+                    imagePathFile: location.imagePathFile ?? null,
+                    imageUrlFile: location.imageUrlFile ?? null,
                 }
             });
+
         callback(locations);
     });
 }
@@ -88,15 +109,32 @@ export async function createLocation({title, detail, address, phone, socialNetwo
  * @param {{title: string, body: string, image: string}} data
  */
  export const updateLocation = async (id, data) => {
-    debugger
    const docRef = doc(db, 'locations', id);
+   if(photo.imageBase64 != null && photo.imageBase64 != "") {
+        const filePath = data?.photo?.pathFile ?? null;
+        
+        if(filePath != null && filePath != '')
+        var response = await uploadFile(filePath, photo.imageBase64, {
+            customMetadata: {
+                ...photo.dimensions
+            }
+        });
+        data.imagePathFile = filePath
+        // obtengo URL de la imagen cargada
+        await getFileUrl(filePath).then(url=>{
+            data.imageUrlFile = url
+        })
+    }
+
+
    await updateDoc(docRef, {
-       title:data.title,
-       detail:data.detail,
-       address:data.address,
-       phone:data.phone,
-       socialNetworkLink:data.socialNetworkLink,
-       // image: data.image
+       title: data.title,
+       detail: data.detail,
+       address: data.address,
+       phone: data.phone,
+       socialNetworkLink: data.socialNetworkLink,
+       imagePathFile: data.imagePathFile,
+       imageUrlFile: data.imageUrlFile ?? null,
      });
 }
 

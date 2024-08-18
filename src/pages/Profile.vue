@@ -3,8 +3,8 @@
     <div
       class="col-12 d-flex justify-content-center align-items-center text-white"
       style="
-        height: 350px;
-        background-image: url('./imgs/bg/bg-profile.jpg');
+        height: 250px;
+        background-image: url('/assets/imgs/bg/bg-profile.jpg');
         background-repeat: no-repeat;
         background-size: cover;
         background-position: center;
@@ -14,7 +14,7 @@
       <div class="col-9">
         <div id="portada" class="d-flex align-items-center py-4">
           <img
-            :src="user.photoURLFile ?? 'imgs/image-avatar.png'"
+            :src="user.photoURLFile ?? '/assets/imgs/image-avatar.png'"
             alt="image-avatar"
             style="width: 200px; height: 200px; border-radius: 50%"
           />
@@ -48,7 +48,7 @@
 
       <!-- <div class="col-8"> -->
       <div v-else class="col-8">
-        <button class="btn btn-secondary" v-on:click="showContent()">
+        <button class="btn btn-secondary" v-on:click="showProfile()">
           Volver al Perfil
         </button>
 
@@ -138,7 +138,7 @@
 <script setup>
 import { ref, watch } from "vue";
 import { doUpdateProfile } from "../auth/auth.js";
-import { subscribeToIncomingProfilePosts } from "../posts/index.js";
+import { subscribeToIncomingProfilePosts, reloadPostImage } from "../posts/index.js";
 import ButtonSubmitLoader from "../components/ButtonSubmitLoader.vue";
 import { useAuth } from "../composition/functions.js";
 import { onMounted, onUnmounted } from "vue";
@@ -151,14 +151,17 @@ const posts = ref([]);
 const toEdit = ref(false);
 const photoURL = ref(null);
 const previewImage = ref(null);
-  const reader = new FileReader();
+const reader = new FileReader();
+
 // Show edit profile panel
 const edit = () => {
   toEdit.value = true;
 };
-// Show content profile
-const showContent = () => {
+
+// Oculta el form, retornando al perfil
+const showProfile = () => {
   toEdit.value = false;
+  photoURL.value = null;
 };
 
 // funciones de carga de imagen
@@ -176,6 +179,8 @@ const formData = ref({
   displayName: user.displayName || null,
   firstName: user.firstName || null,
   lastName: user.lastName || null,
+  // photoURL: user.photoURL || null,
+  // photoURLFile: user.photoURLFile || null,
 });
 // watcher,detecta cuando hay nueva info en user.
 watch(user, async (newUser, oldUser) => {
@@ -191,13 +196,12 @@ watch(user, async (newUser, oldUser) => {
 });
 
 // update de perfil de usuario
-const updateProfile = () => {
+const updateProfile = async () => {
   isLoading.value = true;
-debugger
-  const success = doUpdateProfile({
+  const response = await doUpdateProfile({
     ...formData.value,
     photo: {
-      name: photoURL.value ?? user.value.avatar.photoURL,
+      base64: photoURL.value,
       dimensions: {
         width: previewImage?.value?.width ?? user.value?.avatar?.width,
         height: previewImage.value?.height ?? user.value?.avatar?.height,
@@ -211,10 +215,17 @@ debugger
     //   },
     // },
   });
-  if (success) {
+  if (response.success) {
     // TODO: Mensaje de éxito
-    isLoading.value = false;
-    toEdit.value = false;
+    // if(response.photoURLFile != null) posts.value = reloadPostImage(posts.value, response.photoURLFile)
+    // posts.value.forEach(post => {
+    //       post.photoURLFile = response.photoURLFile;
+    //     });
+    // emit('update-post-image', response.photoURLFile);
+    setTimeout(async () => {
+      isLoading.value = false;
+      toEdit.value = false;
+    }, 250);
   } else {
     // TODO: Mensaje de error
   }
@@ -224,10 +235,15 @@ let unsubscribe = () => {};
 // Al montar el componente cargo los posteos de mi usuario
 onMounted(async () => {
   unsubscribe = await subscribeToIncomingProfilePosts(user.value.id, (data) => {
-    posts.value = data;
-    photoURL.value = reader.result;
+    posts.value = data.reverse();
+    // photoURL.value = reader.result;
   });
 });
+
+onUnmounted(async () => {
+  unsubscribe()
+});
+
 </script>
 
 <style></style>

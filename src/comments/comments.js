@@ -17,7 +17,6 @@ const commentsRef = collection(db, 'comments');
  * @returns {Promise<void>}
  */
 export async function saveComment({user, idPost, message}) {
-// debugger
     const data = {
         user,
         idPost,

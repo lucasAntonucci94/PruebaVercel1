@@ -51,6 +51,13 @@ const routes = [
         }
     },
     {
+        path: '/chatList',
+        component: ChatList,
+        meta: {
+            requiresAuth: true,
+        }
+    },
+    {
         path: '/profile',
         component: Profile,
         meta: {

@@ -56,18 +56,15 @@ onAuthStateChanged(auth, user => {
     notifyAll();
 });
 
-
 /**
  * Carga la data completa del perfil del usuario.
  *
  * @param {{email: string, photoURL: string}} user
  */
- function loadProfileInfo(user) {
+function loadProfileInfo(user) {
     
     const promiseFile = getFileUrl(user.photoURL).then(url => {
         userData.photoURLFile = url;
-        
-
     });
     const promiseProfile = getUserProfileByEmail(user.email).then(data => {
         userData.avatar = data.avatar;
@@ -180,30 +177,28 @@ export async function doRegister({email, password}) {
  * Actualiza el perfil del usuario.
  *
  * @param {{displayName: string}} options
- * @returns {Promise<boolean>}
+ * @returns {Promise<Object>}
  */
 export async function doUpdateProfile({displayName, photo, firstName, lastName}) {
-    debugger
     try {
+        const promises = []
         const profileData = {
             displayName,
             firstName,
             lastName,
         }
-        const promises = []
-    
-        if(photo) {
-            const photoName = 'profile/' + userData.email + '.jpg';
-            promises.upload = uploadFile(photoName, photo.name, {
+        
+        if(photo?.base64 != null) {
+            const filePath = 'profile/' + userData.email + '.jpg';
+            var response = await uploadFile(filePath, photo.base64, {
                 customMetadata: {
                     ...photo.dimensions
                 }
             });
-            profileData.photoURL = photoName;
+            profileData.photoURL = filePath;
         }
-        
+
         promises.profile = updateProfile(auth.currentUser, profileData);
-                
         promises.user = updateUser(userData.id, {
             email: userData.email,
             displayName: profileData.displayName,
@@ -214,17 +209,32 @@ export async function doUpdateProfile({displayName, photo, firstName, lastName})
                 width:photo?.dimensions?.width || null,
                 height:photo?.dimensions?.height || null,
             },
-            photoURLFile:userData.photoURLFile || null,
+            photoURLFile: userData.photoURLFile || null,
         })
+        
         await Promise.all(promises)
         userData.displayName = displayName;
+        
         if(photo)
             userData.photoURL = profileData.photoURL;
 
         notifyAll();
         loadProfileInfo(userData)
-        return true;
+
+        return {success:true, photoURLFile: userData.photoURLFile};
     } catch(err) {
-        return false;
+        return {success:false, photoURLFile: null};
     }
 }
+
+
+// /**
+//  * Obtiene la imagen de storage del usuario
+//  *
+//  * @param {{photoURL: string}} user
+//  */
+// export function getStorageImage(photoURL) {
+//     return getFileUrl(photoURL).then(url => {
+//         return url;
+//     });
+// }

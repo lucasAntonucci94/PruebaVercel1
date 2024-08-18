@@ -4,8 +4,8 @@
           <div
             class="col-12 d-flex justify-content-center align-items-center text-white"
             style="
-              height: 350px;
-              background-image: url('./imgs/bg/bg-profile.jpg');
+              height: 250px;
+              background-image: url('/assets/imgs/bg/bg-profile.jpg');
               background-repeat: no-repeat;
               background-size: cover;
               background-position: center;
@@ -13,57 +13,59 @@
             v-if="!formFlag"
           >
             <div class="row">
-              <div
-                id="portada"
-                class="col-12 d-flex align-items-center justify-content-center py-4"
-              >
+              <div id="portada" class="col-12 d-flex align-items-center justify-content-center py-4">
                 <h1 class="px-4">EXPLORAR</h1>
               </div>
             </div>
           </div>
-          <div class="col-12 my-4">
+          <div class="col-12 my-2">
             <Alert v-if="message.text !== null" :type="message.type">
               {{ message.text }}
             </Alert>
           </div>
-          <div v-if="!formFlag" class="col-12 d-flex justify-content-end px-5">
+          <div v-if="!formFlag" class="col-12 d-flex justify-content-end px-3">
             <button class="btn btn-warning text-white" v-on:click="toCreate()">
               <b> ¿Queres adherirte a nuestra lista? </b>
             </button>
           </div>
-          <div class="col-8 d-flex justify-content-center align-items-center pb-5">
-            <div v-if="!formFlag" class="col-8">
+          <div class="col-12 d-flex justify-content-center align-items-center py-3">
+            <div v-if="!formFlag" class="row">
               <h2 class="mb-5 text-center sr-only">Listado de Lugares de interes</h2>
-            <template v-for="location in arrayLocations">
-             <div class="row bg-light rounded border my-2">
-                   
-                  <div class="col-12 text-center">
-                    <img
-                      src="imgs/locations/image-default.jpg"
-                      alt="image-default"
-                      class=".img-fluid"
-                      style="max-width: 100%; height: auto"
-                    />
-                  </div>
-                  <div class="col-12 my-3">
-                    <div class="row px-5">
-                      <div class="col-12 pt-2">
-                        <h3 class="h4">{{ location.title }}</h3>
-                      </div>
-                      <div class="col-12">
-                        <div class="row d-flex justify-content-center">
-                          <div class="col-11">
-                            <p>{{ location.detail }}</p>
-                          </div>
-                          <div class="col-1 d-flex align-items-center">
-                            <button class="btn btn-primary" v-on:click="toShow(location)">VER</button>
+                <div class="col-4 list-scrollable" style="height: 450px"> 
+                  <template v-for="location in arrayLocations">
+                    <div class="row bg-light rounded border my-2">
+                        <div v-if="location.imageUrlFile != null" class="col-12 text-center">
+                          <img
+                            :src="location.imageUrlFile"
+                            alt="image-default"
+                            class=".img-fluid"
+                            style="max-width: 100%; max-height: 275px"
+                          />
+                        </div>
+                        <div class="col-12 my-3">
+                          <div class="row px-5">
+                            <div class="col-12 pt-2">
+                              <h3 class="h4">{{ location.title }}</h3>
+                            </div>
+                            <div class="col-12">
+                              <div class="row d-flex justify-content-center">
+                                <div class="col-11">
+                                  <p>{{ location.detail }}</p>
+                                </div>
+                                <div class="col-3 d-flex align-items-center">
+                                  <button class="btn btn-primary" v-on:click="toShow(location)">Detalle</button>
+                                  <button class="btn btn-primary" v-on:click="centerMap(location)">Mapa</button>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
                     </div>
-                  </div>
-              </div>
-              </template>
+                  </template>
+                </div>
+                <div class="col-8 "> 
+                  <Map v-if="arrayLocations.length > 0" :locations="arrayLocations ?? []" :selectedLocation="locationRef.value" />
+                </div>
             </div>
             <!-- Formulario de adhesion -->
             <div v-else class="col-8">
@@ -111,10 +113,30 @@
                       v-model="formData.phone"
                     />
                   </div>
+                  <div class="col-12">
+                    <label for="imageBase64" class="form-label my-2">Imagen</label>
+                    <input
+                      type="file"
+                      id="imageBase64"
+                      class="form-control"
+                      :disabled="isLoading"
+                      @change="loadImage"
+                    />
+                    <div class="p-5" v-if="imageBase64 !== null">
+                      <p>Previsualización de la imagen</p>
+                      <img 
+                        :src="imageBase64"
+                        alt=""
+                        ref="previewImage"
+                        class=".img-fluid"    
+                        style="width: 100%;"
+                      />
+                    </div>
+                  </div>
                   <div class="col-12 my-3">
                     <ButtonSubmitLoader :loading="isLoading">
-                      <strong> ACEPTAR </strong></ButtonSubmitLoader
-                    >
+                      <strong> ACEPTAR </strong>
+                    </ButtonSubmitLoader>
                   </div>
                 </div>
               </form>
@@ -142,17 +164,14 @@
             <button class="btn btn-info mt-4" v-on:click="toShow(null)">
                 Volver
             </button>
-            </div>
-
-         
-          
+            </div>          
         </div>
     </template>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch,onMounted, onUnmounted, defineEmits  } from "vue";
 import {
   createLocation,
   updateLocation,
@@ -161,9 +180,9 @@ import {
 } from "../locations/index.js";
 import ButtonSubmitLoader from "../components/ButtonSubmitLoader.vue";
 import { useAuth } from "../composition/functions.js";
-import { onMounted, onUnmounted } from "vue";
 import Loader from "../components/Loader.vue";
 import Alert from "../components/Alert.vue";
+import Map from "../components/Map.vue";
 
 const { user } = useAuth();
 const arrayLocations = ref([]);
@@ -171,8 +190,9 @@ const locationRef = ref({});
 const isLoading = ref(false);
 const formFlag = ref(false);
 const showFlag = ref(false);
-// const photoURL = ref(null);
-// const previewImage = ref(null);
+const imageBase64 = ref(null);
+const previewImage = ref(null);
+const reader = new FileReader();
 
 const message = ref({
   text: null,
@@ -193,7 +213,7 @@ const loadImage = (ev) => {
   const reader = new FileReader();
   const image = ev.target.files[0];
   reader.addEventListener("load", function () {
-    photoURL.value = reader.result;
+    imageBase64.value = reader.result;
   });
   reader.readAsDataURL(image);
 };
@@ -213,8 +233,14 @@ const toShow = (location) => {
   showFlag.value = !showFlag.value
   if(location != null){
     locationRef.value = location
-    debugger
   }
+};
+
+//Cambia formFlag que oculta el listado y muestra el formulario
+const centerMap = (location) => {
+  locationRef.value = location
+  // this.$emit('locationSelected', location)
+  // emit('locationSelected', location)
 };
 //Cambia formFlag que oculta el listado y muestra el formulario
 const toCreate = () => {
@@ -225,7 +251,6 @@ const toCreate = () => {
 // guardamos el nuevo lugar de interes
 const saveLocation = () => {
   isLoading.value = true;
-  debugger;
   if (
     formData.value.title == null ||
     formData.value.title == "" ||
@@ -242,17 +267,16 @@ const saveLocation = () => {
     };
     isLoading.value = false;
   } else {
-    debugger;
     if (locationRef.value.idDoc == null || locationRef.value.idDoc == "") {
       const success = createLocation({
         ...formData.value,
-        // photo: {
-        //   name: photoURL.value,
-        //   dimensions: {
-        //     width: previewImage.value.width,
-        //     height: previewImage.value.height,
-        //   },
-        // },
+        photo: {
+          imageBase64: imageBase64.value,
+          dimensions: {
+            width: previewImage.value.width,
+            height: previewImage.value.height,
+          },
+        },
       });
       if (success) {
         isLoading.value = false;
@@ -273,7 +297,6 @@ const saveLocation = () => {
       const success = updateLocation(locationRef.value.idDoc, {
         ...formData.value,
       });
-      debugger;
       if (success) {
         isLoading.value = false;
         formFlag.value = !formFlag.value;
@@ -317,6 +340,9 @@ onMounted(async () => {
   });
 });
 </script>
-
 <style>
+.list-scrollable{
+  height: 60vh;
+  overflow-y: auto;
+}
 </style>

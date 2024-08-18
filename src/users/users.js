@@ -25,9 +25,9 @@ const usersRef = collection(db, 'users');
             lastName: user.lastName,
             email: user.email,
             avatar: user.avatar || null,
+            photoURLFile: user.photoURLFile,
         })
     });
-
     return users
 }
 
@@ -41,9 +41,7 @@ export const getUserProfileByEmail = async (email) => {
     const snapshot = await getDocs(queryUser);
 
     if(snapshot.empty) return null;
-
     const user = snapshot.docs[0].data();
-
     return {
         id: snapshot.docs[0].id,
         email: user.email,
@@ -52,6 +50,7 @@ export const getUserProfileByEmail = async (email) => {
         lastName: user.lastName || null,
         avatar: user.avatar || null,
         isAdmin: user.isAdmin || null,
+        photoURLFile: user.photoURLFile
     };
 }
 

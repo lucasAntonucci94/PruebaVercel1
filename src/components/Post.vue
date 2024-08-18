@@ -76,9 +76,9 @@
           </div>
         </div>
       </div>
-      <div class="col-12 text-center">
+      <div v-if="post.imageUrlFile != null" class="col-12 text-center">
         <img
-          src="imgs/image-default.jpg"
+           :src="post.imageUrlFile"
           alt="image-default"
           class=".img-fluid"
           style="max-width: 100%; height: auto"
@@ -124,6 +124,8 @@ const props = defineProps({
     body: String,
     user: String,
     timestamp: Date,
+    imagePathFile: String,
+    imageUrlFile: String,
   },
 });
 
@@ -132,16 +134,22 @@ const props = defineProps({
 //elimina un posteo
 const toDelete = async (id) => {
   const success = await deletePost(id);
-  isLoading.value = false;
+  // isLoading.value = false;
 };
+// const updatePostUserImage = (newPhotoURLFile) => {
+//   post.user.photoURLFile = newPhotoURLFile;
+// };
 
 onMounted(async () => {
   // COMO SOLUCION A LA FALLA EN REFRESCAR LAS REFERENCIAS SE PUEDE CORRER ESTO
   // Carga le imagen del usuario del posteo cada vez que monta el componente
-   getFileUrl(props.post.user.photoURL).then(url=>{
-            props.post.user.photoURLFile = url
-        })
- 
+  //  getFileUrl(props.post.user.photoURL).then(url=>{
+  //           props.post.user.photoURLFile = url
+  //       })
+  // $on('update-post-user-image', updatePostUserImage);
+  // console.log("props.post")
+  // console.log(props.post)
+
 })
 </script>
 

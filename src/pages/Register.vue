@@ -46,10 +46,10 @@
       </form>
     </div>
     <div class="col-6">
-      <img src="imgs/image-register.jpg" 
+      <img src="/assets/imgs/catanddog4.png" 
           alt="image-default"
           class=".img-fluid"
-          style="max-width: 100%; height: auto" />
+          style="max-width: 70%; height: auto" />
     </div>
     </div>
   </section>

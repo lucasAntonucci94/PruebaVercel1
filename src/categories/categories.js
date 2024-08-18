@@ -65,7 +65,6 @@ const categoriesRef = collection(db, 'categories');
 //  * @param {{title: string, body: string, image: string}} data
 //  */
 //  export const updatePost = async (id, data) => {
-//      debugger
 //     const docRef = doc(db, 'posts', id);
 //     await updateDoc(docRef, {
 //         title: data.title,

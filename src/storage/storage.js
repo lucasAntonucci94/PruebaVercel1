@@ -11,11 +11,8 @@ const storage = getStorage();
  * @returns {Promise<void>}
  */
  export async function uploadFile(filepath, file, metadata = {}) {
-    
     const imageRef = ref(storage, filepath);
     return await uploadString(imageRef, file,'data_url', metadata);
-
-
 }
 
 /**
