@@ -1,6 +1,4 @@
 {
-    "build": {
-        "output": "dist",
-        "framework": "vue"
-    }
+    "output": "dist",
+    "framework": "vue"
 }
