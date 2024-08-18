@@ -1,6 +1,9 @@
 {
     "framework": "vue",
-    "build": {
-        "outputDirectory": "dist"
-    }
+    "routes": [
+        {
+        "src": "/(.*)",
+        "dest": "/public/$1"
+        }
+    ]
   }
