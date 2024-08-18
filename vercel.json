@@ -2,8 +2,8 @@
     "framework": "vue",
     "routes": [
         {
-        "src": "/(.*)",
-        "dest": "/public/$1"
+            "src": "/(.*)",
+            "dest": "/public/$1"
         }
     ]
   }
