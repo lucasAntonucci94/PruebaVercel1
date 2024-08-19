@@ -83,7 +83,7 @@ onMounted(async () => {
         .then(data => user.value = data)
         .catch(err => console.error('[UserProfile] getUserProfileByEmail: Error al obtener la data: ', err));
         
-    unsubscribe = await subscribeToIncomingProfilePosts(user.value.id, data => { posts.value = data });
+    unsubscribe = await subscribeToIncomingProfilePosts(user.value.id, data => { posts.value = data.reverse() });
 });
 
 </script>

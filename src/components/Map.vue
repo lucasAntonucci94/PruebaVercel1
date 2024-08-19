@@ -18,50 +18,18 @@
       center: { lat: -34.5627, lng: -58.45829 },
       zoom: 13
     });
-    
+    map.value.markers = [];
     props.locations.forEach(location => {
-    const geocoder = new google.maps.Geocoder();
-    geocoder.geocode({ address: location.address }, (results, status) => {
-      if (status === 'OK') {
-        const marker = new google.maps.Marker({
-          map: map.value,
-          position: results[0].geometry.location,
-          title: location.title
-        });
-        const infoWindow = new google.maps.InfoWindow({
-          content: `
-            <div class="info-window">
-              <h3 class="info-window__title">${location.title || ''}</h3>
-              <p class="info-window__detail">${location.detail || ''}</p>
-              <p class="info-window__address">${location.address || ''}</p>
-              <ul class="info-window__contact">
-                <li class="info-window__contact-item">
-                  <span class="info-window__contact-label">Phone:</span>
-                  <span class="info-window__contact-value">${location.phone || ''}</span>
-                </li>
-                <li class="info-window__contact-item">
-                  <span class="info-window__contact-label">Social Network:</span>
-                  <a href="${location.socialNetworkLink || '#'}">${location.socialNetworkLink || ''}</a>
-                </li>
-              </ul>
-            </div>
-          `
-        });
-        marker.addListener('click', () => {
-          infoWindow.open(map.value, marker);
-        });
-      } else {
-        console.error('Geocoding failed: ' + status);
-      }
+      createMarker(location)
     });
-    // // si hay un lugar de interese seleccionado, lo centro
-    // if (props.selectedLocation) {
+    // si hay un lugar de interese seleccionado, lo centro
+    // if (props.selectedLocation != undefined && props.selectedLocation != null) {
     //   focusMarker(props.selectedLocation);
     // }
-  });
   };
+  
   const focusMarker = (location) => {
-    if (!map.value) return; // Ensure map is initialized
+    if (!map.value || !map.value.markers || !location.title) return;
 
     const selectedMarker = map.value.markers.find(
       marker => marker.title === location.title
@@ -78,16 +46,94 @@
       console.error(`No se encontró un marcador con el título: ${location.title}`);
     }
   };
+  
+  const createMarker = (location) => {
+    try{
+      if(location?.address != undefined && location?.address != null){
+        const geocoder = new google.maps.Geocoder();
+        if(geocoder){
+          geocoder.geocode({ address: location.address }, (results, status) => {
+            if (status === 'OK') {
+              const marker = new google.maps.Marker({
+                map: map.value,
+                position: results[0].geometry.location,
+                title: location.title
+              });
+              const infoWindow = new google.maps.InfoWindow({
+              content: `
+                <div class="info-window">
+                  <h3 class="info-window__title">${location.title || ''}</h3>
+                  <p class="info-window__detail">${location.detail || ''}</p>
+                  <p class="info-window__address">${location.address || ''}</p>
+                  <ul class="info-window__contact">
+                    <li class="info-window__contact-item">
+                      <span class="info-window__contact-label">Phone:</span>
+                      <span class="info-window__contact-value">${location.phone || ''}</span>
+                    </li>
+                    <li class="info-window__contact-item">
+                      <span class="info-window__contact-label">Social Network:</span>
+                      <a href="${location.socialNetworkLink || '#'}">${location.socialNetworkLink || ''}</a>
+                    </li>
+                  </ul>
+                </div>
+              `
+            });
+            
+            marker.addListener('click', () => {
+              infoWindow.open(map.value, marker);
+            });
+              map.value.markers.push(marker);
+              return marker
+            } else {
+              console.log('Fallo Geolocalizacion: ' + status + '.La direccion ' + location.address + ' no es correcta.');
+              return null
+            }
+          });
+        }
+        return null
+      }
+    }catch(err){
+      console.error('Ocurrio un error inesperado: ' + err + '.');
+      return null
+    }
+  };
+  
+  const setNewLocation = (newLocations) => {
+    let newLoc = findDifferent(newLocations,map.value.markers)
+    const marker = createMarker(newLoc)
 
-  onMounted(initMap);
-  watch(
-  () => props.selectedLocation,
-  (newLocation) => {
-    console.log("WATCHER MAP")
-    console.log(newLocation)
-    // focusMarker(newLocation);
+  };
+
+  function findDifferent(newLocations, markers) {
+    const titlesSet = new Set(markers.map(mk => mk.title));
+
+    const differentLocation = newLocations.filter(nl => !titlesSet.has(nl.title))[0];
+
+    return {
+      id: differentLocation?.id,
+      idDoc: differentLocation?.idDoc,
+      title: differentLocation?.title,
+      detail: differentLocation?.detail,
+      address: differentLocation?.address,
+      phone: differentLocation?.phone,
+      timestamp: differentLocation?.timestamp,
+      imageUrlFile: differentLocation?.imageUrlFile,
+      imagePathFile: differentLocation?.imagePathFile,
+      socialNetworkLink: differentLocation?.socialNetworkLink ?? null,
+    };
   }
-);
+
+  onMounted(()=>{ 
+    initMap() 
+  });
+  
+  watch(() => props.selectedLocation, (newLocation) => {
+    focusMarker(newLocation);
+  });
+
+  watch(() => props.locations, (newLocations) => {
+    setNewLocation(newLocations);
+  });
 </script>
   
 <style scoped>

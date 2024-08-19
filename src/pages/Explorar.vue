@@ -64,7 +64,7 @@
                   </template>
                 </div>
                 <div class="col-8 "> 
-                  <Map v-if="arrayLocations.length > 0" :locations="arrayLocations ?? []" :selectedLocation="locationRef.value" />
+                  <Map v-if="arrayLocations.length > 0" :locations="arrayLocations ?? []" :selectedLocation="locationRef" />
                 </div>
             </div>
             <!-- Formulario de adhesion -->
