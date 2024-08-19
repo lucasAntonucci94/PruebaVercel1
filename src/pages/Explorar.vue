@@ -64,7 +64,7 @@
                   </template>
                 </div>
                 <div class="col-8 "> 
-                  <Map v-if="arrayLocations.length > 0" :locations="arrayLocations ?? []" :selectedLocation="locationRef.value" />
+                  <Map v-if="arrayLocations.length > 0" :locations="arrayLocations ?? []" :selectedLocation="locationRef" />
                 </div>
             </div>
             <!-- Formulario de adhesion -->
@@ -152,9 +152,9 @@
                   <p>Dirección: {{locationRef.address}}</p>
                   <p>Teléfono: {{locationRef.phone}}</p>
               </div>
-              <div class="col-6">
+              <div class="col-6" v-if="locationRef.imageUrlFile != null">
                   <img
-                      src="imgs/locations/image-default.jpg"
+                      :src="locationRef.imageUrlFile"
                       alt="image-default"
                       class=".img-fluid"
                       style="max-width: 100%; height: auto"
@@ -233,6 +233,7 @@ const toShow = (location) => {
   showFlag.value = !showFlag.value
   if(location != null){
     locationRef.value = location
+    console.log(locationRef.value.imageUrlFile)
   }
 };
 
@@ -268,16 +269,19 @@ const saveLocation = () => {
     isLoading.value = false;
   } else {
     if (locationRef.value.idDoc == null || locationRef.value.idDoc == "") {
-      const success = createLocation({
+      const body = {
         ...formData.value,
-        photo: {
+      }
+      if(imageBase64.value != null){
+        body.photo = {
           imageBase64: imageBase64.value,
           dimensions: {
             width: previewImage.value.width,
             height: previewImage.value.height,
-          },
-        },
-      });
+          }
+        }
+      }
+      const success = createLocation(body);
       if (success) {
         isLoading.value = false;
         formFlag.value = !formFlag.value;
@@ -290,6 +294,7 @@ const saveLocation = () => {
         formData.value.address = null;
         formData.value.phone = null;
         formData.value.socialNetworkLink = null;
+        imageBase64.value = null;
       } else {
         // TODO ERROR
       }

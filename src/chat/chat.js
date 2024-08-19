@@ -213,7 +213,6 @@ export const subscribeToIncomingPrivateMessages = async (from, to, callback) => 
         const querySnapshot = await getDocs(q)
         querySnapshot.forEach((doc) => {
             let chat =  doc.data()
-            debugger
             // ACA DEBERIA VERIFICAR QUE TENGA MENSAJES PARA HACER EL PUSH, evitando cargar chats vacios.
             chats.push( {
                 idDoc : doc.id,
