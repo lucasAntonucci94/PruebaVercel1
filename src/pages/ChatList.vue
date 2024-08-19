@@ -4,6 +4,7 @@
     <div class="row d-flex justify-content-center align-items-center">
       <template v-if="!hasChats">
         <p class="p-5 text-center h4">
+          <Loader v-if="isLoading" class="gray" />
           NO TIENE CHATS DISPONIBLES
         </p>
       </template>

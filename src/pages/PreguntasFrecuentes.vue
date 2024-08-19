@@ -14,6 +14,25 @@
       <div class="col-8">
         <div class="row d-flex justify-content-center">
           <h2 class="mb-4 text-center h3">Chat de consultas global.</h2>
+          <section class="col-8">
+            <div id="chat-message-list">
+              <Loader v-if="isLoading" class="gray" />
+              <div class="scrollable" v-else>
+                <div
+                  v-for="message in messages"
+                  class="m-1 bg-light reounded p-3"
+                >
+                  <b
+                    >(<DateFormatted :date="message.timestamp" />)
+                    <router-link :to="`/user/${message.user}`">{{
+                      message.user
+                    }}</router-link>
+                    dijo</b
+                  >: {{ message.message }}
+                </div>
+              </div>
+            </div>
+          </section>
           <section class="col-8 py-3">
             <h2 class="pb-2 h5">Inserte un mensaje:</h2>
             <form action="#" @submit.prevent="send">
@@ -33,25 +52,6 @@
                 Enviar
               </ButtonSubmitLoader>
             </form>
-          </section>
-          <section class="col-8">
-            <div id="chat-message-list">
-              <Loader v-if="isLoading" class="gray" />
-              <template v-else>
-                <div
-                  v-for="message in messages"
-                  class="m-1 bg-light reounded p-3"
-                >
-                  <b
-                    >(<DateFormatted :date="message.timestamp" />)
-                    <router-link :to="`/user/${message.user}`">{{
-                      message.user
-                    }}</router-link>
-                    dijo</b
-                  >: {{ message.message }}
-                </div>
-              </template>
-            </div>
           </section>
         </div>
       </div>
@@ -123,5 +123,9 @@ export default {
   },
 };
 </script>
-
-<style></style>
+<style>
+.scrollable {
+  height: 50vh;
+  overflow-y: auto;
+}
+</style>
