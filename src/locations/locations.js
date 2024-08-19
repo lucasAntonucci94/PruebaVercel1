@@ -25,7 +25,7 @@ export async function createLocation({title, detail, address, phone, socialNetwo
         imageUrlFile: null,
     };
 
-    if(photo.imageBase64 != null && photo.imageBase64 != "") {
+    if(photo != undefined && photo != null && photo.imageBase64 != null && photo.imageBase64 != "") {
         const filePath = 'location/' + data.id + '.jpg';
         var response = await uploadFile(filePath, photo.imageBase64, {
             customMetadata: {
@@ -37,6 +37,9 @@ export async function createLocation({title, detail, address, phone, socialNetwo
         await getFileUrl(filePath).then(url=>{
             data.imageUrlFile = url
         })
+    }else{
+        data.imagePathFile = null
+        data.imageUrlFile = null
     }
     
     try {
